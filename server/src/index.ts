@@ -3,7 +3,9 @@ import { dotenv, oak, cors } from './deps.ts';
 import * as Storage from './lib/storage.ts';
 import { createTimestamp } from './utils.ts';
 
-const storage = Storage.createLocalStorage();
+const storage = Deno.args.includes('--location')
+  ? Storage.createLocalStorage()
+  : Storage.createInMemoryStorage();
 
 const env = dotenv.config();
 
