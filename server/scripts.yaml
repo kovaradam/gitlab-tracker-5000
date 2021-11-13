@@ -6,6 +6,7 @@ scripts:
     allow:
       - net
       - read
+      - env
 
   dev:
     desc: Start dev server with watcher
@@ -15,6 +16,7 @@ scripts:
     allow:
       - net
       - read
+      - env
 
   test:
     desc: Run tests
