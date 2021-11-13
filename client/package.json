@@ -1,7 +1,8 @@
 {
-  "name": "gitlab-tracker",
+  "name": "gitlab-tracker-5000",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
@@ -31,7 +32,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "server": "cd ../server && vr start",
-    "dev": "npm start & npm run server"
+    "dev": "npm start & npm run server",
+    "serve": "npm run build && npx surge ./build gitlab-tracker-5000.surge.sh"
   },
   "eslintConfig": {
     "extends": [
@@ -64,5 +66,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "surge": "^0.23.0"
   }
 }
