@@ -1,0 +1,10 @@
+@keyframes show {
+  from {
+    background-color: #ffdea0;
+    box-shadow: 0 0 0 2px #ffdea0;
+  }
+  to {
+    background-color: white;
+    box-shadow: 0 0 0 2px white;
+  }
+}

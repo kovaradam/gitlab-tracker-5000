@@ -1,0 +1,26 @@
+scripts:
+  start:
+    desc: Start server
+    cmd: src/index.ts --location
+    unstable: true
+    allow:
+      - net
+      - read
+
+  dev:
+    desc: Start dev server with watcher
+    cmd: src/index.ts --location
+    watch: true
+    unstable: true
+    allow:
+      - net
+      - read
+
+  test:
+    desc: Run tests
+    cmd: deno test
+    watch: true
+    unstable: true
+    allow:
+      - net
+      - read
