@@ -8,7 +8,9 @@ const storage = Deno.args?.includes('--location')
   ? Storage.createLocalStorage()
   : Storage.createInMemoryStorage();
 
-const port = Number(Deno.env.get('PORT')) ?? 8080;
+const envPort = Deno.env.get('PORT');
+
+const port = envPort ? Number(envPort) : 8080;
 
 const [app, router] = [new oak.Application(), new oak.Router()];
 
