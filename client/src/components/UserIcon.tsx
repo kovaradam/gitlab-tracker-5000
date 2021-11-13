@@ -1,7 +1,11 @@
 import { gql } from 'graphql-request';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { gitlabUrlStorage, tokenStorage } from '../config/storage';
+import {
+  gitlabUrlStorage,
+  gitlabTokenStorage,
+  serviceTokenStorage,
+} from '../config/storage';
 import { useQuery } from '../store/use-query';
 import { useClickOutsideRef } from '../utils/use-click-outside';
 import { useToggle } from '../utils/use-toggle';
@@ -30,7 +34,8 @@ export const UserIcon: React.FC<Props> = (props) => {
 
   const logOut = (): void => {
     gitlabUrlStorage.delete();
-    tokenStorage.delete();
+    gitlabTokenStorage.delete();
+    serviceTokenStorage.delete();
   };
 
   const avatarUrl = gitlabUrlStorage.get()?.concat(data?.currentUser.avatarUrl ?? '');

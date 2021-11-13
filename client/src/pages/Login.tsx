@@ -3,7 +3,11 @@ import styled from 'styled-components';
 import { Spinner } from '../components/LoadingOverlay';
 import { Logo } from '../components/Logo';
 import { createHeaders } from '../config/api';
-import { gitlabUrlStorage, tokenStorage } from '../config/storage';
+import {
+  gitlabUrlStorage,
+  gitlabTokenStorage,
+  serviceTokenStorage,
+} from '../config/storage';
 import { FormStyle } from '../style/form';
 
 const inputs = { gitlabUrl: 'gitlab-url-input', gitlabToken: 'gitlab-token-input' };
@@ -23,7 +27,7 @@ export const Login: React.FC = () => {
     setErrors({ gitlabUrl, gitlabToken });
   };
 
-  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     const [gitlabUrl, gitlabToken] = inputRefs.map(({ current }) => current?.value);
 
@@ -35,21 +39,23 @@ export const Login: React.FC = () => {
     const validUrl = createValidUrl(gitlabUrl);
 
     setIsLoading(true);
+    try {
+      const response = await fetch(`${validUrl}/api/v4/user`, {
+        headers: createHeaders(gitlabToken),
+      });
+      if (!response.ok) {
+        throw Error('unauthorized');
+      }
+      const body = await response.json();
 
-    fetch(`${validUrl}/api/v4/user`, { headers: createHeaders(gitlabToken) })
-      .then(({ status }) => {
-        if (status !== 200) {
-          showErrors(true, true);
-          return;
-        }
-        gitlabUrlStorage.set(validUrl);
-        tokenStorage.set(gitlabToken);
-        window.location.href = '';
-      })
-      .catch((_) => {
-        showErrors(true, true);
-      })
-      .finally(() => setIsLoading(false));
+      gitlabUrlStorage.set(validUrl);
+      gitlabTokenStorage.set(gitlabToken);
+      serviceTokenStorage.set(body.username);
+      window.location.href = '';
+    } catch (error) {
+      showErrors(true, true);
+    }
+    setIsLoading(false);
   };
 
   const registerFieldset = (key: keyof typeof inputs): Record<string, unknown> => {

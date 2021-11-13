@@ -1,8 +1,8 @@
 import React from 'react';
-import { tokenStorage } from '../config/storage';
+import { gitlabTokenStorage } from '../config/storage';
 
 export function useLogin(): { isLoggedIn: boolean; isLoading: boolean } {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(tokenStorage.get() !== null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(gitlabTokenStorage.get() !== null);
   const [isLoading, setIsLoading] = React.useState(!isLoggedIn);
 
   React.useEffect(() => {

@@ -2,13 +2,13 @@ import { GraphQLClient } from 'graphql-request';
 import { RequestDocument, Variables } from 'graphql-request/dist/types';
 import React from 'react';
 import { createGraphQLClient } from '../config/api';
-import { gitlabUrlStorage, tokenStorage } from '../config/storage';
+import { gitlabUrlStorage, gitlabTokenStorage } from '../config/storage';
 
 const QueryContext = React.createContext<GraphQLClient | null>(null);
 
 export const QueryProvider: React.FC = (props) => {
   const client = React.useMemo(() => {
-    const [endpoint, token] = [gitlabUrlStorage.get(), tokenStorage.get()];
+    const [endpoint, token] = [gitlabUrlStorage.get(), gitlabTokenStorage.get()];
     if (!endpoint || !token) {
       throw new Error('Url or token has not been set!');
     }

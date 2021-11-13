@@ -1,5 +1,7 @@
 import { createStorage } from '../utils/storage';
 
-export const [gitlabUrlStorage, tokenStorage] = ['gitlab-url', 'gitlab-token'].map(
-  createStorage,
-);
+export const [gitlabUrlStorage, gitlabTokenStorage, serviceTokenStorage] = [
+  'gitlab-url',
+  'gitlab-token',
+  'service-token',
+].map(createStorage);
