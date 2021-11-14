@@ -1,10 +1,11 @@
 import { gql } from 'graphql-request';
 
 export const GET_TIMELOGS = gql`
-  query getTimelogs($username: String!) {
+  query getTimelogs {
     projects(membership: true, searchNamespaces: true) {
       nodes {
-        issues(authorUsername: $username) {
+        name
+        issues {
           nodes {
             iid
             timelogs {
@@ -27,6 +28,7 @@ export type GetTimelogsResponse = {
   projects: {
     nodes: [
       {
+        name: string;
         issues: {
           nodes: [
             {

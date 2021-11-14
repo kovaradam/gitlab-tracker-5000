@@ -36,12 +36,8 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     useQuery<GetTimelogsResponse>(GET_TIMELOGS);
 
   React.useEffect(() => {
-    if (!userDetails) {
-      return;
-    }
-    const { username } = userDetails;
-    fetchTimelogData({ username });
-  }, [fetchTimelogData, userDetails]);
+    fetchTimelogData();
+  }, [fetchTimelogData]);
 
   const checkTimelog = React.useCallback(
     (timelog: { spentAt: string; user: { username: string } }) => {
@@ -58,21 +54,23 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     () =>
       data?.projects.nodes
         .filter(({ issues }) => issues.nodes.length > 0)
-        .map(({ issues }) => issues.nodes)
-        .flat()
         .map(
-          ({ timelogs, iid }) =>
+          ({ issues, name }) =>
             [
-              iid,
-              timelogs.nodes
-                .filter(checkTimelog)
-                .map(({ timeSpent }) => timeSpent * 1000)
+              name,
+              issues.nodes
+                .map(({ timelogs }) =>
+                  timelogs.nodes
+                    .filter(checkTimelog)
+                    .map(({ timeSpent }) => timeSpent * 1000)
+                    .reduce((prev, current) => prev + current, 0),
+                )
                 .reduce((prev, current) => prev + current, 0),
             ] as [string, number],
         )
         .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
-        .map(([iid, totalTimeSpent], index) => ({
-          title: iid,
+        .map(([name, totalTimeSpent], index) => ({
+          title: name,
           value: totalTimeSpent,
           color: colors[index % colors.length],
         })),
@@ -81,7 +79,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
 
   const renderLabel: LabelRenderFunction = ({ dataEntry: { title, value } }): string => {
     const { hours, minutes } = getTimeValuesFromMillis(value);
-    return `#${title}: ${hours}h ${minutes}m`;
+    return `${title}: ${hours}h ${minutes}m`;
   };
 
   const fromInputId = 'from-input';
