@@ -1,14 +1,19 @@
-import 'https://deno.land/x/dotenv/load.ts';
 import { auth, getToken } from './auth.ts';
-import { oak, cors } from './deps.ts';
-import * as Storage from './lib/storage.ts';
+import { oak, cors, redis } from './deps.ts';
 import { createTimestamp } from './utils.ts';
 
-const storage = Deno.args?.includes('--location')
-  ? Storage.createLocalStorage()
-  : Storage.createInMemoryStorage();
+const [envPort, redisPort, redisHostname, redisPassword] = [
+  'PORT',
+  'REDIS_PORT',
+  'REDIS_HOST',
+  'REDIS_PWD',
+].map(Deno.env.get);
 
-const envPort = Deno.env.get('PORT');
+const storage = await redis.connect({
+  port: redisPort,
+  hostname: redisHostname ?? '',
+  password: redisPassword,
+});
 
 const port = envPort ? Number(envPort) : 8080;
 
@@ -17,42 +22,56 @@ const [app, router] = [new oak.Application(), new oak.Router()];
 app.use(cors.oakCors());
 app.use(auth);
 
-router.get('/api/timestamp', (context) => {
-  const token = getToken(context.request.headers);
-  const timestamp = storage.get(String(token));
+router.get('/api/timestamp', async ({ response, request }, next) => {
+  try {
+    const token = getToken(request.headers);
+    const timestamp = await storage.get(String(token));
+    await next();
+    if (!timestamp) {
+      response.status = 404;
+      return;
+    }
 
-  if (!timestamp) {
-    context.response.status = 404;
-    return;
+    response.body = timestamp;
+    response.status = 200;
+  } catch (error) {
+    console.error(error);
+    response.status = 500;
   }
-
-  context.response.body = timestamp;
-  context.response.status = 200;
 });
 
-router.post('/api/timestamp', (context) => {
-  const token = getToken(context.request.headers);
-  const timestamp = createTimestamp();
+router.post('/api/timestamp', async (context) => {
+  try {
+    const token = getToken(context.request.headers);
+    const timestamp = createTimestamp();
 
-  storage.set(String(token), timestamp);
+    await storage.set(String(token), timestamp);
 
-  context.response.status = 200;
-  context.response.body = timestamp;
+    context.response.status = 200;
+    context.response.body = timestamp;
+  } catch (error) {
+    console.error(error);
+    context.response.status = 500;
+  }
 });
 
-router.delete('/api/timestamp', (context) => {
-  const token = getToken(context.request.headers);
+router.delete('/api/timestamp', async (context) => {
+  try {
+    const token = getToken(context.request.headers);
 
-  const timestamp = storage.get(String(token));
+    const timestamp = await storage.get(String(token));
 
-  if (!timestamp) {
-    context.response.status = 404;
-    return;
+    if (!timestamp) {
+      context.response.status = 404;
+      return;
+    }
+
+    storage.del(String(token));
+    context.response.status = 204;
+  } catch (error) {
+    console.error(error);
+    context.response.status = 500;
   }
-
-  storage.delete(String(token));
-
-  context.response.status = 204;
 });
 
 app.use(router.routes());

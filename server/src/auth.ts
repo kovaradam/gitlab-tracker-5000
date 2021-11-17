@@ -2,7 +2,7 @@ import { oak } from './deps.ts';
 
 const tokenHeaderKey = 'authorization';
 
-export const auth: oak.Middleware<Record<string, unknown>> = (context, next) => {
+export const auth: oak.Middleware<Record<string, unknown>> = async (context, next) => {
   const token = getToken(context.request.headers);
 
   if (!token) {
@@ -10,7 +10,7 @@ export const auth: oak.Middleware<Record<string, unknown>> = (context, next) => 
     context.response.status = 401;
     return;
   }
-  next();
+  await next();
 };
 
 export function getToken(headers: Headers): string | null {
