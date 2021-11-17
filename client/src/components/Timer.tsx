@@ -48,7 +48,7 @@ function leftPad(value: string, finalSize: number, symbol: string): string {
 const S = {
   Wrapper: styled.span`
     --default-transform: translate(-50%);
-    position: absolute;
+    position: fixed;
     left: 50vw;
     transform: var(--default-transform);
     display: flex;
@@ -62,7 +62,7 @@ const S = {
     gap: 1rem;
 
     &[data-visible='false'] {
-      display: none;
+      transform: var(--default-transform) translateY(160%);
     }
 
     transition: all 200ms;

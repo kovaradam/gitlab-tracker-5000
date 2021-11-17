@@ -65,9 +65,8 @@ export const Main: React.FC = () => {
           <S.UserIcon />
         </S.Header>
         <S.Main>
-          {timestamp !== null ? (
-            <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
-          ) : (
+          <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
+          {timestamp === null && (
             <S.StartTimerButton onClick={handleStartButton}>Start</S.StartTimerButton>
           )}
           {isEntryDialogVisible ? (
