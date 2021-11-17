@@ -1,12 +1,11 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { GrFormClose } from 'react-icons/gr';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { FormStyle } from '../../style/form';
 import { IssueCard, Props as IssueCardProps } from './IssueCard';
 import { SearchInput, SearchResult } from './SearchInput';
 import { useQuery } from '../../store/use-query';
-import { useUser } from '../../store/use-user';
 import {
   GetProjectsQueryResponse,
   GET_PROJECTS,
@@ -19,6 +18,7 @@ import { formatTitle } from '../../utils/issues';
 import { AnimatedValue } from '../AnimatedValue';
 import { createIssueNote } from './utils';
 import { DialogModal } from '../DialogModal';
+import { dots } from '../../style/animation';
 
 type Props = {
   discardEntry: (success?: boolean) => void;
@@ -31,7 +31,6 @@ export const NewEntryDialog: React.FC<Props> = ({
   setTrackedTime,
   trackedTime,
 }) => {
-  const userDetails = useUser();
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
   const issueInputRef = React.useRef<HTMLInputElement>(null);
   const [fetchIssues, { data, isLoading }] =
@@ -68,7 +67,10 @@ export const NewEntryDialog: React.FC<Props> = ({
   const searchInputHandler: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
-    const variables = { username: userDetails?.username ?? '', search: value };
+    if (value.length < 3) {
+      return;
+    }
+    const variables = { search: value };
     fetchIssues(variables);
   };
 
@@ -260,12 +262,7 @@ const S = {
     color: var(--grey);
     &[data-loading]::after {
       content: '';
-      animation: ${keyframes`
-        0%{content: '';}
-        33%{content: '.';}
-        66%{content: '..';}
-        100%{content: '...';}
-      `} 2s linear infinite;
+      animation: ${dots} 2s linear infinite;
     }
   `,
   NoIssueMessage: styled.label`

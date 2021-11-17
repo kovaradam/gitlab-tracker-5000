@@ -13,13 +13,19 @@ import { AddTimeDialog } from '../components/AddTimeDialog';
 import { useToggle } from '../utils/use-toggle';
 import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
+import { dots } from '../style/animation';
 
 const trackedTimeStorage = createStorage('tracked-time');
 
 const initLastTimestamp = trackedTimeStorage.get();
 
 export const Main: React.FC = () => {
-  const { timestamp, startTimer, stopTimer } = useTimestamp();
+  const {
+    timestamp,
+    startTimer,
+    stopTimer,
+    isLoading: isTimestampLoading,
+  } = useTimestamp();
   const [trackedTime, setTrackedTime] = React.useState<number | null>(
     initLastTimestamp !== null ? Number(initLastTimestamp) : null,
   );
@@ -67,7 +73,12 @@ export const Main: React.FC = () => {
         <S.Main>
           <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
           {timestamp === null && (
-            <S.StartTimerButton onClick={handleStartButton}>Start</S.StartTimerButton>
+            <S.StartTimerButton
+              onClick={handleStartButton}
+              data-loading={isTimestampLoading}
+            >
+              <span>Start</span>
+            </S.StartTimerButton>
           )}
           {isEntryDialogVisible ? (
             <NewEntryDialog
@@ -167,6 +178,15 @@ const S = {
     width: 50%;
     margin-bottom: 1rem;
     z-index: 1;
+
+    &[data-loading='true']:after {
+      content: '.';
+      animation: ${dots} 2s linear infinite;
+    }
+
+    &[data-loading='true'] > span {
+      display: none;
+    }
   `,
   Timer: styled(Timer)`
     z-index: 2;

@@ -1,11 +1,11 @@
 import { gql } from 'graphql-request';
 
 export const GET_PROJECTS = gql`
-  query getIssues($username: String!, $search: String) {
-    projects(membership: true, searchNamespaces: true) {
+  query getIssues($search: String) {
+    projects(membership: true) {
       nodes {
         name
-        issues(authorUsername: $username, search: $search) {
+        issues(search: $search) {
           nodes {
             title
             iid
