@@ -15,14 +15,27 @@ type Props = {
 export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
   ({ isLoading, className, children, ...inputProps }, forwardedRef) => {
     const [value, setValue] = React.useState('');
+    const timeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const debounceOnChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+      setValue(event.target.value ?? '');
+
+      if (!inputProps?.onChange) {
+        return;
+      }
+
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current);
+      }
+
+      timeout.current = setTimeout(() => {
+        inputProps.onChange?.(event);
+      }, 500);
+    };
 
     return (
       <S.Wrapper className={className}>
-        <S.Input
-          onChange={({ target: { value } }): void => setValue(value)}
-          ref={forwardedRef}
-          {...inputProps}
-        />
+        <S.Input ref={forwardedRef} {...inputProps} onChange={debounceOnChange} />
         {isLoading && <S.Spinner />}
         <S.ResultsWrapper>
           {typeof children === 'function' ? children(value) : children}
