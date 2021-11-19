@@ -76,6 +76,7 @@ export const Main: React.FC = () => {
             <S.StartTimerButton
               onClick={handleStartButton}
               data-loading={isTimestampLoading}
+              disabled={isTimestampLoading}
             >
               <span>Start</span>
             </S.StartTimerButton>
