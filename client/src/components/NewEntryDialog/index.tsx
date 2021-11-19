@@ -54,7 +54,7 @@ export const NewEntryDialog: React.FC<Props> = ({
       updateCard({ ...card, isLoading: true });
       const issueNote = createIssueNote(card);
       submitIssue(issueNote).then((response) => {
-        if (response === null) {
+        if (response === null || response.createNote.errors.length > 1) {
           updateCard({ ...card, isError: true, isLoading: false });
           return;
         }
