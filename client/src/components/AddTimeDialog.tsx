@@ -24,7 +24,7 @@ export const AddTimeDialog: React.FC<Props> = ({ setTrackedTime, hide }) => {
     );
     const timeToAdd = (hours * 60 * 60 + minutes * 60) * 1000;
 
-    if (timeToAdd === 0) {
+    if (timeToAdd <= 0) {
       return;
     }
 
