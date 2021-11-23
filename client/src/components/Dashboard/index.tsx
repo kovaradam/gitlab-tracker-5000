@@ -2,13 +2,13 @@ import React from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import { LabelRenderFunction } from 'react-minimal-pie-chart/types/commonTypes';
 import styled from 'styled-components';
-import { useQuery } from '../../store/use-query';
+import { useQueryWithCursor } from '../../store/use-query';
 import { useUser } from '../../store/use-user';
 import { FormStyle } from '../../style/form';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
 import { GetTimelogsResponse, GET_TIMELOGS } from './queries';
-import { dateToHtmlProp } from './utils';
+import { dateToHtmlProp, mergeProjectData } from './utils';
 
 type Props = { className?: string };
 
@@ -32,8 +32,10 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
   const userDetails = useUser();
   const [from, setFrom] = React.useState<Date>(new Date(now.getTime() - week));
   const [to, setTo] = React.useState<Date>(now);
-  const [fetchTimelogData, { data, isLoading }] =
-    useQuery<GetTimelogsResponse>(GET_TIMELOGS);
+  const [fetchTimelogData, { data, isLoading }] = useQueryWithCursor<GetTimelogsResponse>(
+    GET_TIMELOGS,
+    mergeProjectData,
+  );
 
   React.useEffect(() => {
     fetchTimelogData();

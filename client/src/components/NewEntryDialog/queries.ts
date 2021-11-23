@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 
 export const GET_PROJECTS = gql`
   query getIssues($search: String) {
-    projects(membership: true) {
+    projects(membership: true, sort: "updated_desc") {
       nodes {
         name
         issues(search: $search) {

@@ -1,8 +1,8 @@
 import { gql } from 'graphql-request';
 
 export const GET_TIMELOGS = gql`
-  query getTimelogs {
-    projects(membership: true, searchNamespaces: true) {
+  query getTimelogs($after: String) {
+    projects(membership: true, searchNamespaces: true, after: $after) {
       nodes {
         name
         issues {
@@ -20,28 +20,28 @@ export const GET_TIMELOGS = gql`
           }
         }
       }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
 `;
 
 export type GetTimelogsResponse = {
   projects: {
-    nodes: [
-      {
-        name: string;
-        issues: {
-          nodes: [
-            {
-              iid: string;
-              timelogs: {
-                nodes: [
-                  { spentAt: string; timeSpent: number; user: { username: string } },
-                ];
-              };
-            },
-          ];
-        };
-      },
-    ];
+    nodes: {
+      name: string;
+      issues: {
+        nodes: [
+          {
+            iid: string;
+            timelogs: {
+              nodes: [{ spentAt: string; timeSpent: number; user: { username: string } }];
+            };
+          },
+        ];
+      };
+    }[];
   };
 };

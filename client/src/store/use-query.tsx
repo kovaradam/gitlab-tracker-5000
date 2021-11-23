@@ -42,6 +42,7 @@ export function useQuery<DataType>(
         setIsLoading(false);
         return data;
       } catch (error) {
+        setIsLoading(false);
         setError(error as Error);
         return null;
       }
@@ -50,4 +51,59 @@ export function useQuery<DataType>(
   );
 
   return [fetch, { data, isLoading, error }];
+}
+
+type Pagination = { pageInfo: { hasNextPage: boolean; endCursor: string } };
+type PageVariables = { after: string };
+
+export function useQueryWithCursor<DataType>(
+  query: RequestDocument,
+  mergeData: (prevData: DataType | null, newData: DataType | null) => DataType | null,
+): [
+  (variables?: Variables) => Promise<DataType | null>,
+  { data: DataType | null; isLoading: boolean; error: Error | null },
+] {
+  const client = React.useContext(QueryContext);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<Error | null>(null);
+  const [data, setData] = React.useState<DataType | null>(null);
+
+  const fetch = React.useCallback(
+    async (variables?: Variables) => {
+      if (!client) {
+        throw new Error(`GraphQL client has not been initialized or isn't provided`);
+      }
+      setIsLoading(true);
+      setError(null);
+      try {
+        // ew
+        let hasNextPage = true;
+        let returnData: DataType | null = null;
+        variables = variables ?? {};
+        while (hasNextPage) {
+          const data = await client.request<DataType>(query, variables);
+          setData((prevData) => mergeData(prevData, data));
+          const { pageInfo } = asPagination(data);
+          hasNextPage = pageInfo.hasNextPage;
+          (variables as PageVariables).after = pageInfo.endCursor;
+          returnData = mergeData(returnData, data);
+        }
+        setIsLoading(false);
+        return returnData;
+      } catch (error) {
+        setIsLoading(false);
+        setError(error as Error);
+        return null;
+      }
+    },
+    [setIsLoading, setData, setError, client, query, mergeData],
+  );
+
+  return [fetch, { data, isLoading, error }];
+}
+
+// ew
+function asPagination(data: unknown): Pagination {
+  const dataRecord = data as Record<string, unknown>;
+  return dataRecord[Object.keys(dataRecord)[0] as keyof typeof data] as Pagination;
 }
