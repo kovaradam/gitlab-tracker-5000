@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { MdOutlinePause } from 'react-icons/md';
 import { getTimeValuesFromMillis } from '../utils/time';
+import { mediaQueries } from '../style/media-queries';
 
 type Props = { timestamp: number | null; stopTimer: () => void; className?: string };
 
@@ -35,8 +36,11 @@ export const Timer: React.FC<Props> = ({ timestamp, stopTimer, ...props }) => {
 };
 
 function formatTime(timestamp: number): string {
-  const { hours, minutes, seconds } = getTimeValuesFromMillis(timestamp);
+  const { hours, minutes, seconds } = getTimeValuesFromMillis(
+    timestamp < 0 ? 0 : timestamp,
+  );
   const withZeroPad = (value: number): string => leftPad(String(value), 2, '0');
+
   return `${withZeroPad(hours)}:${withZeroPad(minutes)}:${withZeroPad(seconds)}`;
 }
 
@@ -63,12 +67,15 @@ const S = {
     box-shadow: var(--base-shadow);
     background-color: white;
     gap: 1rem;
+    transition: all 200ms;
 
     &[data-visible='false'] {
       transform: var(--default-transform) translateY(160%);
     }
 
-    transition: all 200ms;
+    @media ${mediaQueries.create(400)} {
+      max-width: 20rem;
+    }
   `,
   Time: styled.code`
     font-size: 2rem;

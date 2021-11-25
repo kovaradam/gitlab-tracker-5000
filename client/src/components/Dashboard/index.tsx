@@ -5,14 +5,19 @@ import styled from 'styled-components';
 import { useQueryWithCursor } from '../../store/use-query';
 import { useUser } from '../../store/use-user';
 import { FormStyle } from '../../style/form';
+import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
-import { GetTimelogsResponse, GET_TIMELOGS } from './queries';
-import { dateToHtmlProp, mergeProjectData } from './utils';
+import { GetTimelogsResponse, GET_TIMELOGS, Timelog } from './queries';
+import { RowChart } from './RowChart';
+import {
+  dateToHtmlProp,
+  getIssueTimelogs,
+  getProjectTimelogs,
+  mergeProjectData,
+} from './utils';
 
 type Props = { className?: string };
-
-const colors = ['var(--main-color)', 'tomato', '#ff8a50'];
 
 const pieChartConfig = {
   segmentsShift: 1,
@@ -26,9 +31,8 @@ const placeholderData = [30, 20, 40, 10].map((value, index) => ({
   color: index % 2 === 0 ? '#ebe5e5' : 'var(--grey)',
 }));
 
-const [now, week] = [new Date(), 7 * 24 * 60 * 60 * 1000];
-
 export const Dashboard: React.FC<Props> = ({ className }) => {
+  const [now, week] = [new Date(), 7 * 24 * 60 * 60 * 1000];
   const userDetails = useUser();
   const [from, setFrom] = React.useState<Date>(new Date(now.getTime() - week));
   const [to, setTo] = React.useState<Date>(now);
@@ -36,13 +40,16 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     GET_TIMELOGS,
     mergeProjectData,
   );
-
   React.useEffect(() => {
     fetchTimelogData();
   }, [fetchTimelogData]);
+  // const { data, isLoading } = {
+  //   data: JSON.parse(cache.get() ?? '{}') as GetTimelogsResponse,
+  //   isLoading: false,
+  // };
 
   const checkTimelog = React.useCallback(
-    (timelog: { spentAt: string; user: { username: string } }) => {
+    (timelog: Timelog) => {
       const { spentAt, user } = timelog;
       const spentAtDateTime = new Date(spentAt).getTime();
       const timeCheck =
@@ -52,30 +59,8 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     [from, to, userDetails],
   );
 
-  const timelogs = React.useMemo(
-    () =>
-      data?.projects.nodes
-        .filter(({ issues }) => issues.nodes.length > 0)
-        .map(
-          ({ issues, name }) =>
-            [
-              name,
-              issues.nodes
-                .map(({ timelogs }) =>
-                  timelogs.nodes
-                    .filter(checkTimelog)
-                    .map(({ timeSpent }) => timeSpent * 1000)
-                    .reduce((prev, current) => prev + current, 0),
-                )
-                .reduce((prev, current) => prev + current, 0),
-            ] as [string, number],
-        )
-        .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
-        .map(([name, totalTimeSpent], index) => ({
-          title: name,
-          value: totalTimeSpent,
-          color: colors[index % colors.length],
-        })),
+  const [projectTimelogs, issueTimelogs] = React.useMemo(
+    () => [getProjectTimelogs(data, checkTimelog), getIssueTimelogs(data, checkTimelog)],
     [checkTimelog, data],
   );
 
@@ -109,17 +94,21 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
         />
       </S.TimeRangeInputWrapper>
       <S.ChartWrapper>
-        {timelogs?.length === 0 ? (
+        {projectTimelogs?.length === 0 ? (
           <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
         ) : isLoading || !userDetails ? (
           <>
             <S.PieChart data={placeholderData} />
+            <S.RowChart data={placeholderData} />
             <S.PieChartOverlay>
               <Spinner />
             </S.PieChartOverlay>
           </>
         ) : (
-          <S.PieChart data={timelogs} label={renderLabel} animate />
+          <>
+            <S.PieChart data={projectTimelogs} label={renderLabel} animate />
+            <S.RowChart data={issueTimelogs} />
+          </>
         )}
       </S.ChartWrapper>
     </S.Wrapper>
@@ -132,7 +121,7 @@ const S = {
     height: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 2fr;
     grid-template-rows: 4rem 1fr;
   `,
   TimeRangeInputWrapper: styled.span`
@@ -142,12 +131,21 @@ const S = {
     justify-self: center;
     font-size: 1rem;
     width: min-content;
+    &:first-child {
+      grid-column: 1 / 3;
+    }
 
     & > label {
       position: absolute;
       bottom: 100%;
       color: var(--main-color);
       margin: 5px;
+    }
+
+    @media ${mediaQueries.desktop} {
+      &:first-child {
+        grid-column: 1 / 2;
+      }
     }
   `,
   DateInput: styled(FormStyle.Input)`
@@ -157,16 +155,41 @@ const S = {
     background-color: white;
   `,
   ChartWrapper: styled.section`
-    grid-area: 2 / 1 / 3 / 3;
+    grid-area: 2 / 1 / 3 / 4;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
     align-items: center;
+    overflow: auto;
+
+    @media ${mediaQueries.desktop} {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 50% 50%;
+    }
   `,
   PieChart: styled(PieChart).attrs(pieChartConfig)`
     height: 90vmin;
+    height: 50rem;
+    grid-row: 1 / 3;
     & text {
       font-size: 0.3rem;
       fill: white;
+    }
+  `,
+  RowChart: styled(RowChart)`
+    height: min-content;
+    width: 60%;
+    gap: 5px;
+
+    @media ${mediaQueries.desktop} {
+      grid-column: 2;
+      --size: 80%;
+      height: var(--size);
+      width: var(--size);
+      box-sizing: border-box;
+      place-self: center;
+      gap: none;
     }
   `,
   PieChartOverlay: styled.div`

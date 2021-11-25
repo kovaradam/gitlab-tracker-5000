@@ -8,6 +8,7 @@ export const GET_TIMELOGS = gql`
         issues {
           nodes {
             iid
+            title
             timelogs {
               nodes {
                 spentAt
@@ -36,8 +37,9 @@ export type GetTimelogsResponse = {
         nodes: [
           {
             iid: string;
+            title: string;
             timelogs: {
-              nodes: [{ spentAt: string; timeSpent: number; user: { username: string } }];
+              nodes: Timelog[];
             };
           },
         ];
@@ -45,3 +47,5 @@ export type GetTimelogsResponse = {
     }[];
   };
 };
+
+export type Timelog = { spentAt: string; timeSpent: number; user: { username: string } };

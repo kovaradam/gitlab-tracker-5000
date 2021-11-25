@@ -14,6 +14,7 @@ import { useToggle } from '../utils/use-toggle';
 import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
+import { mediaQueries } from '../style/media-queries';
 
 const trackedTimeStorage = createStorage('tracked-time');
 
@@ -187,6 +188,15 @@ const S = {
 
     &[data-loading='true'] > span {
       display: none;
+    }
+
+    @media ${mediaQueries.desktop} {
+      grid-column: 2;
+      grid-row: 1;
+      width: 15rem;
+      position: absolute;
+      top: 6rem;
+      right: 3rem;
     }
   `,
   Timer: styled(Timer)`

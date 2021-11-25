@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { mediaQueries } from '../style/media-queries';
 
 export const DialogModal: React.FC<{ className?: string; hide?: () => void }> = ({
   children,
@@ -41,8 +42,11 @@ const S = {
     flex-direction: column;
     z-index: 1;
     animation: ${keyframes`
-      from{transform:scale(0.8);}
-      to{transform:scale(1);}
+    from{transform:scale(0.8);}
+    to{transform:scale(1);}
     `} 200ms forwards;
+    @media ${mediaQueries.create(400)} {
+      max-width: 20rem;
+    }
   `,
 };
