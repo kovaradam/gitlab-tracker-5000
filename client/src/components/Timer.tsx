@@ -9,13 +9,16 @@ export const Timer: React.FC<Props> = ({ timestamp, stopTimer, ...props }) => {
   const [time, setTime] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    const timeout = 1000;
     if (!timestamp) {
       setTime(null);
       return;
     }
-    setTime(new Date().getTime() - timestamp);
-    const timeoutId = setInterval(() => setTime((p) => (p ?? 0) + timeout), timeout);
+    const [update, timeout] = [
+      (): void => setTime(new Date().getTime() - timestamp),
+      1000,
+    ];
+    update();
+    const timeoutId = setInterval(update, timeout);
     return (): void => {
       clearInterval(timeoutId);
     };
