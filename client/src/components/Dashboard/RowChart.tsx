@@ -18,17 +18,19 @@ export const RowChart: React.FC<Props> = ({ data, ...props }) => {
 
   return (
     <S.Wrapper {...props}>
-      {data
-        .sort((prev, current) => current.value - prev.value)
-        .map(({ color, value, title }) => (
-          <S.RowWrapper title={formatTime(value)} key={title}>
-            <S.RowVolume
-              style={{ backgroundColor: color, width: `${(value / maxValue) * 100}%` }}
-            />
-            <S.RowLabel>{title}</S.RowLabel>
-            <S.AxisLabel>{formatTime(value)}</S.AxisLabel>
-          </S.RowWrapper>
-        ))}
+      <S.ChartWrapper>
+        {data
+          .sort((prev, current) => current.value - prev.value)
+          .map(({ color, value, title }) => (
+            <S.RowWrapper title={formatTime(value)} key={title}>
+              <S.RowVolume
+                style={{ backgroundColor: color, width: `${(value / maxValue) * 100}%` }}
+              />
+              <S.RowLabel>{title}</S.RowLabel>
+              <S.AxisLabel>{formatTime(value)}</S.AxisLabel>
+            </S.RowWrapper>
+          ))}
+      </S.ChartWrapper>
     </S.Wrapper>
   );
 };
@@ -40,6 +42,9 @@ function formatTime(time: number): string {
 
 const S = {
   Wrapper: styled.div`
+    --axis-margin: 5rem;
+  `,
+  ChartWrapper: styled.div`
     display: flex;
     flex-direction: column;
     align-items: baseline;
@@ -48,11 +53,15 @@ const S = {
     border-width: 0 0 2px 2px;
     padding: 2px;
     background-color: #ffffff2b;
+    gap: 1rem;
+    scroll-margin: 50px 0 0 50px;
+    margin-left: var(--axis-margin);
+    width: calc(98% - var(--axis-margin));
+    min-height: 100%;
   `,
   RowWrapper: styled.span`
     position: relative;
     display: flex;
-    height: 2rem;
     width: 100%;
     align-items: center;
   `,
@@ -60,9 +69,11 @@ const S = {
     height: 100%;
     transform-origin: left;
     opacity: 0.7;
+    height: 2rem;
+
     animation: ${keyframes`
-      from {transform: scaleX(0%);}
-      to {transform: scaleX(100%);}
+    from {transform: scaleX(0%);}
+    to {transform: scaleX(100%);}
     `} 500ms ease-out;
   `,
   RowLabel: styled.span`

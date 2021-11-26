@@ -156,10 +156,8 @@ const S = {
   `,
   ChartWrapper: styled.section`
     grid-area: 2 / 1 / 3 / 4;
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 2rem;
-    align-items: center;
     overflow: auto;
 
     @media ${mediaQueries.desktop} {
@@ -170,7 +168,6 @@ const S = {
   `,
   PieChart: styled(PieChart).attrs(pieChartConfig)`
     height: 90vmin;
-    height: 50rem;
     grid-row: 1 / 3;
     & text {
       font-size: 0.3rem;
@@ -179,8 +176,8 @@ const S = {
   `,
   RowChart: styled(RowChart)`
     height: min-content;
-    width: 60%;
-    gap: 5px;
+    width: 90%;
+    gap: 1rem;
 
     @media ${mediaQueries.desktop} {
       grid-column: 2;
@@ -189,7 +186,8 @@ const S = {
       width: var(--size);
       box-sizing: border-box;
       place-self: center;
-      gap: none;
+      overflow-y: auto;
+      overflow-x: visible;
     }
   `,
   PieChartOverlay: styled.div`
