@@ -8,14 +8,10 @@ import { FormStyle } from '../../style/form';
 import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
+import { getIssueTimelogs, getProjectTimelogs } from './data';
 import { GetTimelogsResponse, GET_TIMELOGS, Timelog } from './queries';
 import { RowChart } from './RowChart';
-import {
-  dateToHtmlProp,
-  getIssueTimelogs,
-  getProjectTimelogs,
-  mergeProjectData,
-} from './utils';
+import { dateToHtmlProp, mergeProjectData } from './utils';
 
 type Props = { className?: string };
 
@@ -43,10 +39,6 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
   React.useEffect(() => {
     fetchTimelogData();
   }, [fetchTimelogData]);
-  // const { data, isLoading } = {
-  //   data: JSON.parse(cache.get() ?? '{}') as GetTimelogsResponse,
-  //   isLoading: false,
-  // };
 
   const checkTimelog = React.useCallback(
     (timelog: Timelog) => {
@@ -161,9 +153,10 @@ const S = {
     overflow: auto;
 
     @media ${mediaQueries.desktop} {
+      overflow: visible;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 50% 50%;
+      grid-template-rows: 50vh 1fr;
     }
   `,
   PieChart: styled(PieChart).attrs(pieChartConfig)`
@@ -172,6 +165,9 @@ const S = {
     & text {
       font-size: 0.3rem;
       fill: white;
+    }
+    & path {
+      opacity: 0.7;
     }
   `,
   RowChart: styled(RowChart)`

@@ -2,7 +2,12 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { getTimeValuesFromMillis } from '../../utils/time';
 
-export type Data = { color?: string; value: number; title?: string | number }[];
+export type Data = {
+  color?: string;
+  value: number;
+  title?: string | number;
+  url?: string;
+}[];
 
 type Props = { className?: string; data?: Data };
 
@@ -21,13 +26,15 @@ export const RowChart: React.FC<Props> = ({ data, ...props }) => {
       <S.ChartWrapper>
         {data
           .sort((prev, current) => current.value - prev.value)
-          .map(({ color, value, title }) => (
-            <S.RowWrapper title={formatTime(value)} key={title}>
+          .map(({ color, value, title, url }) => (
+            <S.RowWrapper title={formatTime(value)} key={`${title}${color}${value}`}>
               <S.RowVolume
                 style={{ backgroundColor: color, width: `${(value / maxValue) * 100}%` }}
               />
-              <S.RowLabel>{title}</S.RowLabel>
-              <S.AxisLabel>{formatTime(value)}</S.AxisLabel>
+              <S.RowTitle href={url} rel="noopener noreferrer" target="_blank">
+                {title}
+              </S.RowTitle>
+              <S.AxisLabel style={{ color }}>{formatTime(value)}</S.AxisLabel>
             </S.RowWrapper>
           ))}
       </S.ChartWrapper>
@@ -50,14 +57,14 @@ const S = {
     align-items: baseline;
     justify-content: space-evenly;
     border: dashed grey;
-    border-width: 0 0 2px 2px;
+    border-width: 0 0 0px 1px;
     padding: 2px;
     background-color: #ffffff2b;
     gap: 1rem;
     scroll-margin: 50px 0 0 50px;
     margin-left: var(--axis-margin);
     width: calc(98% - var(--axis-margin));
-    min-height: 100%;
+    min-height: 98%;
   `,
   RowWrapper: styled.span`
     position: relative;
@@ -66,7 +73,6 @@ const S = {
     align-items: center;
   `,
   RowVolume: styled.div`
-    height: 100%;
     transform-origin: left;
     opacity: 0.7;
     height: 2rem;
@@ -76,7 +82,7 @@ const S = {
     to {transform: scaleX(100%);}
     `} 500ms ease-out;
   `,
-  RowLabel: styled.span`
+  RowTitle: styled.a`
     position: absolute;
     left: 2px;
     font-size: 1rem;
@@ -84,7 +90,15 @@ const S = {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100%;
+    max-width: 100%;
+    &:hover {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    &:not([href]) {
+      pointer-events: none;
+    }
   `,
   AxisLabel: styled.span`
     position: absolute;

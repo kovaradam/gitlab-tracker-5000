@@ -36,6 +36,7 @@ button {
 
 a {
   color: var(--secondary-color);
+  text-underline-offset: 1px;
 }
 
 a:hover {
@@ -47,4 +48,20 @@ a:hover {
 button:active {
   box-shadow: none;
   transform: translate(var(--shadow-offset), var(--shadow-offset));
+}
+
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #ffd8d8;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #ffbebe;
 }
