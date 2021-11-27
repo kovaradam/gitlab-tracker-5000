@@ -4,7 +4,6 @@ import { NewEntryDialog } from '../components/NewEntryDialog';
 import { Logo } from '../components/Logo';
 import { Timer } from '../components/Timer';
 import { UserIcon } from '../components/UserIcon';
-import { QueryProvider } from '../store/use-query';
 import { useTimestamp } from '../store/use-timestamp';
 import { createStorage } from '../utils/storage';
 import { UserProvider } from '../store/use-user';
@@ -15,12 +14,13 @@ import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
+import { useIssues, withIssues } from '../components/Dashboard/use-issues';
 
 const trackedTimeStorage = createStorage('tracked-time');
 
 const initLastTimestamp = trackedTimeStorage.get();
 
-export const Main: React.FC = () => {
+export const Main = withIssues(() => {
   const {
     timestamp,
     startTimer,
@@ -28,8 +28,10 @@ export const Main: React.FC = () => {
     isLoading: isTimestampLoading,
   } = useTimestamp();
   const [trackedTime, setTrackedTime] = React.useState<number | null>(
-    initLastTimestamp !== null ? Number(initLastTimestamp) : null,
+    !!initLastTimestamp ? Number(initLastTimestamp) : null,
   );
+  const [fetchIssues] = useIssues();
+
   const [isAddTimeDialogVisible, timeDialogToggle] = useToggle(false);
   const [isSuccessAlertVisible, successAlertToggle] = useToggle(false);
 
@@ -54,56 +56,56 @@ export const Main: React.FC = () => {
     startTimer();
   };
 
-  const discardIssue = (success = false): void => {
+  const discardEntry = (success = false): void => {
     setTrackedTime(null);
     successAlertToggle.set(success);
+    if (success) {
+      fetchIssues();
+    }
   };
 
   const isEntryDialogVisible = trackedTime !== null;
 
   return (
-    <QueryProvider>
-      <UserProvider>
-        <S.Header>
-          <S.AddTimeButton onClick={timeDialogToggle.on}>
-            <MdOutlineAddTask />
-          </S.AddTimeButton>
-          <S.Logo />
-          <S.UserIcon />
-        </S.Header>
-        <S.Main>
-          <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
-          {timestamp === null && (
-            <S.StartTimerButton
-              onClick={handleStartButton}
-              data-loading={isTimestampLoading}
-              disabled={isTimestampLoading}
-            >
-              <span>Start</span>
-            </S.StartTimerButton>
-          )}
-          {isEntryDialogVisible ? (
-            <NewEntryDialog
-              trackedTime={trackedTime}
-              setTrackedTime={setTrackedTime}
-              discardEntry={discardIssue}
-            />
-          ) : (
-            <S.Dashboard />
-          )}
-          {isAddTimeDialogVisible && (
-            <AddTimeDialog hide={timeDialogToggle.off} setTrackedTime={setTrackedTime} />
-          )}
-          {isSuccessAlertVisible && (
-            <S.SuccessAlert hide={successAlertToggle.off}>
-              Timelogs successfully submitted!
-            </S.SuccessAlert>
-          )}
-        </S.Main>
-      </UserProvider>
-    </QueryProvider>
+    <UserProvider>
+      <S.Header>
+        <S.AddTimeButton onClick={timeDialogToggle.on}>
+          <MdOutlineAddTask />
+        </S.AddTimeButton>
+        <S.Logo />
+        <S.UserIcon />
+      </S.Header>
+      <S.Main>
+        <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
+        {timestamp === null && (
+          <S.StartTimerButton
+            onClick={handleStartButton}
+            data-loading={isTimestampLoading}
+            disabled={isTimestampLoading}
+          >
+            <span>Start</span>
+          </S.StartTimerButton>
+        )}
+        {isEntryDialogVisible && (
+          <NewEntryDialog
+            trackedTime={trackedTime}
+            setTrackedTime={setTrackedTime}
+            discardEntry={discardEntry}
+          />
+        )}
+        <S.Dashboard />
+        {isAddTimeDialogVisible && (
+          <AddTimeDialog hide={timeDialogToggle.off} setTrackedTime={setTrackedTime} />
+        )}
+        {isSuccessAlertVisible && (
+          <S.SuccessAlert hide={successAlertToggle.off}>
+            Timelogs successfully submitted!
+          </S.SuccessAlert>
+        )}
+      </S.Main>
+    </UserProvider>
   );
-};
+});
 
 const S = {
   Header: styled.header`
@@ -166,6 +168,9 @@ const S = {
   `,
   Dashboard: styled(Dashboard)`
     grid-row: 1 / 3;
+    @media ${mediaQueries.desktop} {
+      grid-row: 1 / 5;
+    }
   `,
   StartTimerButton: styled.button`
     background-color: var(--main-color);

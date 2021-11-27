@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { Spinner } from '../components/LoadingOverlay';
 import { Logo } from '../components/Logo';
-import { Router } from '../components/Router';
 import { useLogin } from '../store/use-login';
+import { QueryProvider } from '../store/use-query';
 import { Login } from './Login';
 import { Main } from './Main';
 
@@ -10,17 +10,19 @@ export const App: React.FC = () => {
   const { isLoading, isLoggedIn } = useLogin();
 
   const Content = isLoggedIn ? Main : Login;
+
+  if (isLoading) {
+    return (
+      <S.Wrapper>
+        <Logo />
+        <S.Spinner />
+      </S.Wrapper>
+    );
+  }
   return (
-    <Router>
-      {isLoading ? (
-        <S.Wrapper>
-          <Logo />
-          <S.Spinner />
-        </S.Wrapper>
-      ) : (
-        <Content />
-      )}
-    </Router>
+    <QueryProvider>
+      <Content />
+    </QueryProvider>
   );
 };
 

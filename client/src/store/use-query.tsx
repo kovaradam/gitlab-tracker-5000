@@ -73,6 +73,7 @@ export function useQueryWithCursor<DataType>(
       if (!client) {
         throw new Error(`GraphQL client has not been initialized or isn't provided`);
       }
+      setData(null);
       setIsLoading(true);
       setError(null);
       try {

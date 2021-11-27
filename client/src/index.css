@@ -33,6 +33,7 @@ button {
   border: none;
   transition: all 100ms;
   box-shadow: var(--base-shadow);
+  cursor: pointer;
 }
 
 a {

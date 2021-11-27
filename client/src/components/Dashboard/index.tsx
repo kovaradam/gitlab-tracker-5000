@@ -2,17 +2,17 @@ import React from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import { LabelRenderFunction } from 'react-minimal-pie-chart/types/commonTypes';
 import styled from 'styled-components';
-import { useQueryWithCursor } from '../../store/use-query';
 import { useUser } from '../../store/use-user';
 import { FormStyle } from '../../style/form';
 import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
 import { getDayTimelogs, getIssueTimelogs, getProjectTimelogs } from './data';
-import { GetTimelogsResponse, GET_TIMELOGS, Timelog } from './queries';
+import { Timelog } from './queries';
 import { BarChart } from './BarChart';
-import { dateToHtmlProp, formatTime, mergeProjectData } from './utils';
+import { dateToHtmlProp, formatTime } from './utils';
 import { LineChart } from './LineChart';
+import { useIssues } from './use-issues';
 
 type Props = { className?: string };
 
@@ -33,10 +33,8 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
   const userDetails = useUser();
   const [from, setFrom] = React.useState<Date>(new Date(now.getTime() - week));
   const [to, setTo] = React.useState<Date>(now);
-  const [fetchTimelogData, { data, isLoading }] = useQueryWithCursor<GetTimelogsResponse>(
-    GET_TIMELOGS,
-    mergeProjectData,
-  );
+  const [fetchTimelogData, { data, isLoading }] = useIssues();
+
   React.useEffect(() => {
     fetchTimelogData();
   }, [fetchTimelogData]);
@@ -60,12 +58,18 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     [checkTimelog, data],
   );
 
-  const renderLabel: LabelRenderFunction = ({ dataEntry: { title, value } }): string => {
+  const renderPieLabel: LabelRenderFunction = ({
+    dataEntry: { title, value },
+  }): string => {
+    if (!(title && value)) {
+      return '';
+    }
     const { hours, minutes } = getTimeValuesFromMillis(value);
     return `${title}: ${hours}h ${minutes}m`;
   };
 
   const fromInputId = 'from-input';
+  const showOverlay = isLoading || !userDetails || projectTimelogs?.length === 0;
 
   return (
     <S.Wrapper className={className}>
@@ -92,23 +96,21 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
         />
       </S.TimeRangeInputWrapper>
       <S.ChartWrapper>
-        {projectTimelogs?.length === 0 ? (
-          <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
-        ) : isLoading || !userDetails ? (
-          <>
-            <S.PieChart data={placeholderData} />
-            <S.BarChart data={placeholderData} />
-            <S.LineChart data={placeholderData} />
-            <S.ChartOverlay>
+        <S.PieChart
+          data={projectTimelogs ?? placeholderData}
+          label={renderPieLabel}
+          animate
+        />
+        <S.BarChart data={issueTimelogs ?? placeholderData} />
+        <S.LineChart data={dayTimelogs ?? placeholderData} />
+        {showOverlay && (
+          <S.ChartOverlay>
+            {projectTimelogs?.length === 0 ? (
+              <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
+            ) : (
               <Spinner />
-            </S.ChartOverlay>
-          </>
-        ) : (
-          <>
-            <S.PieChart data={projectTimelogs} label={renderLabel} animate />
-            <S.BarChart data={issueTimelogs} />
-            <S.LineChart data={dayTimelogs} />
-          </>
+            )}
+          </S.ChartOverlay>
         )}
       </S.ChartWrapper>
     </S.Wrapper>
@@ -122,12 +124,12 @@ const S = {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 2fr;
-    grid-template-rows: 4rem 1fr;
+    grid-template-rows: 6rem 1fr;
   `,
   TimeRangeInputWrapper: styled.span`
     position: relative;
     background-color: white;
-    align-self: end;
+    align-self: center;
     justify-self: center;
     font-size: 1rem;
     width: min-content;
@@ -161,10 +163,9 @@ const S = {
     overflow: auto;
 
     @media ${mediaQueries.desktop} {
-      overflow: visible;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 50vh 1fr;
+      grid-template-rows: 50% 50%;
     }
   `,
   PieChart: styled(PieChart).attrs(pieChartConfig)`
@@ -205,6 +206,9 @@ const S = {
       height: var(--size);
       width: var(--size);
       box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   `,
   ChartOverlay: styled.div`
@@ -215,6 +219,8 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #ffffff57;
+
     & svg {
       fill: var(--main-color);
     }

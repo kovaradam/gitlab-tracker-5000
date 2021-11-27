@@ -60,6 +60,10 @@ export const getIssueTimelogs: DataTransformer = (data, checkTimelog) => {
 };
 
 export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
+  if (!data) {
+    return undefined;
+  }
+
   const dateTimelogMap: Record<string, number> = {};
   data?.projects.nodes
     .filter(({ issues }) => issues.nodes.length > 0)
@@ -69,16 +73,20 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
     .flat()
     .filter(checkTimelog)
     .map(
-      ({ timeSpent, spentAt }) =>
+      ({ timeSpent, spentAt }) => [new Date(spentAt), timeSpent * 1000] as [Date, number],
+    )
+    .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
+    .sort(([prev], [next]) => prev.getTime() - next.getTime())
+    .map(
+      ([date, totalTimeSpent]) =>
         [
-          new Date(spentAt).toLocaleDateString('en', {
+          date.toLocaleDateString('en', {
             day: '2-digit',
             month: '2-digit',
           }),
-          timeSpent * 1000,
+          totalTimeSpent,
         ] as [string, number],
     )
-    .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
     .forEach(([spentAt, totalTimeSpent]) => {
       if (!dateTimelogMap[spentAt]) {
         dateTimelogMap[spentAt] = 0;

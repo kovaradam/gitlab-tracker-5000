@@ -9,7 +9,6 @@ export const LineChart: React.FC<Props> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }
-  console.log(props);
 
   const formatValue = (value: number): string => {
     return props.formatValue?.(value) ?? String(value);
@@ -43,7 +42,8 @@ export const LineChart: React.FC<Props> = ({ data, ...props }) => {
     title: formatValue(value),
   }));
 
-  const mainColor = data[0].color;
+  const mainColor = data[0]?.color || 'var(--chart-grey)';
+  console.log(mainColor);
 
   return (
     <S.Wrapper {...props}>
@@ -54,15 +54,21 @@ export const LineChart: React.FC<Props> = ({ data, ...props }) => {
         >
           <S.Graph points={graphPath} style={{ stroke: mainColor }} />
           {valueLinePaths.map((points) => (
-            <S.ValueLine points={points} />
+            <S.ValueLine points={points} key={points} />
           ))}
           <S.AxisLine points={`${printPoint(0, 0)}, ${printPoint(100, 0)}`} />
         </S.Chart>
         {axisLabels.map(({ left, title }) => (
-          <S.AxisLabel style={{ left: `${left}%`, top: '101%' }}>{title}</S.AxisLabel>
+          <S.AxisLabel style={{ left: `${left}%`, top: '101%' }} key={`${title}${left}`}>
+            {title}
+          </S.AxisLabel>
         ))}
         {dataLabels.map(({ left, top, title }) => (
-          <S.DataLabel style={{ left: `${left}%`, top: `${top}%`, color: mainColor }}>
+          <S.DataLabel
+            style={{ left: `${left}%`, top: `${top}%`, color: mainColor }}
+            key={`${left}${top}${title}`}
+            title={title}
+          >
             {title}
           </S.DataLabel>
         ))}
@@ -119,10 +125,12 @@ const S = {
     font-size: 0.8rem;
     color: var(--chart-grey);
     transform: translateX(-50%);
+    cursor: default;
   `,
   DataLabel: styled.span`
     position: absolute;
     font-size: 0.8rem;
     transform: translateX(-50%) translateY(-100%);
+    cursor: default;
   `,
 };
