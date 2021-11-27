@@ -9,8 +9,6 @@ import { Main } from './Main';
 export const App: React.FC = () => {
   const { isLoading, isLoggedIn } = useLogin();
 
-  const Content = isLoggedIn ? Main : Login;
-
   if (isLoading) {
     return (
       <S.Wrapper>
@@ -19,9 +17,12 @@ export const App: React.FC = () => {
       </S.Wrapper>
     );
   }
+  if (!isLoggedIn) {
+    return <Login />;
+  }
   return (
     <QueryProvider>
-      <Content />
+      <Main />
     </QueryProvider>
   );
 };
