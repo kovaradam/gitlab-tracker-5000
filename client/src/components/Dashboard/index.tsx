@@ -8,10 +8,11 @@ import { FormStyle } from '../../style/form';
 import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
-import { getIssueTimelogs, getProjectTimelogs } from './data';
+import { getDayTimelogs, getIssueTimelogs, getProjectTimelogs } from './data';
 import { GetTimelogsResponse, GET_TIMELOGS, Timelog } from './queries';
-import { RowChart } from './RowChart';
-import { dateToHtmlProp, mergeProjectData } from './utils';
+import { BarChart } from './BarChart';
+import { dateToHtmlProp, formatTime, mergeProjectData } from './utils';
+import { LineChart } from './LineChart';
 
 type Props = { className?: string };
 
@@ -51,8 +52,11 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
     [from, to, userDetails],
   );
 
-  const [projectTimelogs, issueTimelogs] = React.useMemo(
-    () => [getProjectTimelogs(data, checkTimelog), getIssueTimelogs(data, checkTimelog)],
+  const [projectTimelogs, issueTimelogs, dayTimelogs] = React.useMemo(
+    () =>
+      [getProjectTimelogs, getIssueTimelogs, getDayTimelogs].map((t) =>
+        t(data, checkTimelog),
+      ),
     [checkTimelog, data],
   );
 
@@ -73,6 +77,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           value={dateToHtmlProp(from)}
           onChange={({ target }): void => setFrom(new Date(target.value))}
           max={dateToHtmlProp(to)}
+          disabled={isLoading}
         />
       </S.TimeRangeInputWrapper>
       <S.TimeRangeInputWrapper>
@@ -83,6 +88,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           onChange={({ target }): void => setTo(new Date(target.value))}
           min={dateToHtmlProp(from)}
           max={dateToHtmlProp(now)}
+          disabled={isLoading}
         />
       </S.TimeRangeInputWrapper>
       <S.ChartWrapper>
@@ -91,15 +97,17 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
         ) : isLoading || !userDetails ? (
           <>
             <S.PieChart data={placeholderData} />
-            <S.RowChart data={placeholderData} />
-            <S.PieChartOverlay>
+            <S.BarChart data={placeholderData} />
+            <S.LineChart data={placeholderData} />
+            <S.ChartOverlay>
               <Spinner />
-            </S.PieChartOverlay>
+            </S.ChartOverlay>
           </>
         ) : (
           <>
             <S.PieChart data={projectTimelogs} label={renderLabel} animate />
-            <S.RowChart data={issueTimelogs} />
+            <S.BarChart data={issueTimelogs} />
+            <S.LineChart data={dayTimelogs} />
           </>
         )}
       </S.ChartWrapper>
@@ -166,11 +174,8 @@ const S = {
       font-size: 0.3rem;
       fill: white;
     }
-    & path {
-      opacity: 0.7;
-    }
   `,
-  RowChart: styled(RowChart)`
+  BarChart: styled(BarChart).attrs({ formatValue: formatTime })`
     height: min-content;
     width: 90%;
     gap: 1rem;
@@ -186,7 +191,23 @@ const S = {
       overflow-x: visible;
     }
   `,
-  PieChartOverlay: styled.div`
+  LineChart: styled(LineChart).attrs({ formatValue: formatTime })`
+    height: min-content;
+    width: 90%;
+    height: 20rem;
+    gap: 1rem;
+    align-self: start;
+    justify-self: center;
+
+    @media ${mediaQueries.desktop} {
+      grid-row: 2;
+      --size: 80%;
+      height: var(--size);
+      width: var(--size);
+      box-sizing: border-box;
+    }
+  `,
+  ChartOverlay: styled.div`
     top: 0;
     position: absolute;
     height: 100%;

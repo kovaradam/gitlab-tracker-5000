@@ -8,6 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --main-color: #ff596a;
+  --chart-grey: #444444;
   --secondary-color: #4848ef;
   --grey: #e6e6e6;
   --header-height: 5rem;

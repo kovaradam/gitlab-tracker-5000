@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { getTimeValuesFromMillis } from '../../utils/time';
+import { max } from './utils';
 
 export type Data = {
   color?: string;
@@ -9,17 +9,21 @@ export type Data = {
   url?: string;
 }[];
 
-type Props = { className?: string; data?: Data };
+export type Props = {
+  className?: string;
+  data?: Data;
+  formatValue?: (value: number) => string;
+};
 
-function max(a: number, b: number): number {
-  return a > b ? a : b;
-}
-
-export const RowChart: React.FC<Props> = ({ data, ...props }) => {
+export const BarChart: React.FC<Props> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }
   const maxValue = data.map((data) => data.value).reduce(max, 0);
+
+  const formatValue = (value: number): string => {
+    return props.formatValue?.(value) ?? String(value);
+  };
 
   return (
     <S.Wrapper {...props}>
@@ -27,25 +31,20 @@ export const RowChart: React.FC<Props> = ({ data, ...props }) => {
         {data
           .sort((prev, current) => current.value - prev.value)
           .map(({ color, value, title, url }) => (
-            <S.RowWrapper title={formatTime(value)} key={`${title}${color}${value}`}>
-              <S.RowVolume
+            <S.BarWrapper title={formatValue(value)} key={`${title}${color}${value}`}>
+              <S.BarVolume
                 style={{ backgroundColor: color, width: `${(value / maxValue) * 100}%` }}
               />
-              <S.RowTitle href={url} rel="noopener noreferrer" target="_blank">
+              <S.BarTitle href={url} rel="noopener noreferrer" target="_blank">
                 {title}
-              </S.RowTitle>
-              <S.AxisLabel style={{ color }}>{formatTime(value)}</S.AxisLabel>
-            </S.RowWrapper>
+              </S.BarTitle>
+              <S.AxisLabel style={{ color }}>{formatValue(value)}</S.AxisLabel>
+            </S.BarWrapper>
           ))}
       </S.ChartWrapper>
     </S.Wrapper>
   );
 };
-
-function formatTime(time: number): string {
-  const { hours, minutes } = getTimeValuesFromMillis(time);
-  return `${hours}h ${minutes}m`;
-}
 
 const S = {
   Wrapper: styled.div`
@@ -66,15 +65,14 @@ const S = {
     width: calc(98% - var(--axis-margin));
     min-height: 98%;
   `,
-  RowWrapper: styled.span`
+  BarWrapper: styled.span`
     position: relative;
     display: flex;
     width: 100%;
     align-items: center;
   `,
-  RowVolume: styled.div`
+  BarVolume: styled.div`
     transform-origin: left;
-    opacity: 0.7;
     height: 2rem;
 
     animation: ${keyframes`
@@ -82,7 +80,7 @@ const S = {
     to {transform: scaleX(100%);}
     `} 500ms ease-out;
   `,
-  RowTitle: styled.a`
+  BarTitle: styled.a`
     position: absolute;
     left: 2px;
     font-size: 1rem;

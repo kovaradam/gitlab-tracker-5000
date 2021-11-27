@@ -33,6 +33,7 @@ export const getProjectTimelogs: DataTransformer = (data, checkTimelog) => {
       color: colors[index % colors.length],
     }));
 };
+
 export const getIssueTimelogs: DataTransformer = (data, checkTimelog) => {
   return data?.projects.nodes
     .filter(({ issues }) => issues.nodes.length > 0)
@@ -56,4 +57,38 @@ export const getIssueTimelogs: DataTransformer = (data, checkTimelog) => {
       value: totalTimeSpent,
       color: colors[index % colors.length],
     }));
+};
+
+export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
+  const dateTimelogMap: Record<string, number> = {};
+  data?.projects.nodes
+    .filter(({ issues }) => issues.nodes.length > 0)
+    .map(({ issues }) => issues.nodes)
+    .flat()
+    .map(({ timelogs }) => timelogs.nodes)
+    .flat()
+    .filter(checkTimelog)
+    .map(
+      ({ timeSpent, spentAt }) =>
+        [
+          new Date(spentAt).toLocaleDateString('en', {
+            day: '2-digit',
+            month: '2-digit',
+          }),
+          timeSpent * 1000,
+        ] as [string, number],
+    )
+    .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
+    .forEach(([spentAt, totalTimeSpent]) => {
+      if (!dateTimelogMap[spentAt]) {
+        dateTimelogMap[spentAt] = 0;
+      }
+      dateTimelogMap[spentAt] += totalTimeSpent;
+    });
+
+  return Object.entries(dateTimelogMap).map(([spentAt, totalTimeSpent]) => ({
+    title: spentAt,
+    value: totalTimeSpent,
+    color: colors[0],
+  }));
 };
