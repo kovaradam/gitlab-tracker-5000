@@ -1,7 +1,9 @@
 import React from 'react';
 import './show.css';
 
-export const AnimatedValue: React.FC = ({ children }) => {
+type Props = { className?: string };
+
+export const AnimatedValue: React.FC<Props> = ({ children, ...props }) => {
   const prevValue = React.useRef(children);
   const wrapperElement = React.useRef<HTMLSpanElement>(null);
 
@@ -21,7 +23,9 @@ export const AnimatedValue: React.FC = ({ children }) => {
 
   return (
     <>
-      <span ref={wrapperElement}>{children}</span>
+      <span ref={wrapperElement} {...props}>
+        {children}
+      </span>
     </>
   );
 };

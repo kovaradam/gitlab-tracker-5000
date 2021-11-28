@@ -15,6 +15,7 @@ import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
 import { useIssues, withIssues } from '../components/Dashboard/use-issues';
+import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
 
 const trackedTimeStorage = createStorage('tracked-time');
 
@@ -66,10 +67,15 @@ export const Main = withIssues(() => {
 
   const isEntryDialogVisible = trackedTime !== null;
 
+  const registerStartButtonInfo = useRegisterInfoBox('Start timer');
+
   return (
     <UserProvider>
       <S.Header>
-        <S.AddTimeButton onClick={timeDialogToggle.on}>
+        <S.AddTimeButton
+          onClick={timeDialogToggle.on}
+          {...useRegisterInfoBox('Add timelog')}
+        >
           <MdOutlineAddTask />
         </S.AddTimeButton>
         <S.Logo />
@@ -82,6 +88,7 @@ export const Main = withIssues(() => {
             onClick={handleStartButton}
             data-loading={isTimestampLoading}
             disabled={isTimestampLoading}
+            {...registerStartButtonInfo}
           >
             <span>Start</span>
           </S.StartTimerButton>
@@ -102,6 +109,7 @@ export const Main = withIssues(() => {
             Timelogs successfully submitted!
           </S.SuccessAlert>
         )}
+        <S.InfoBox />
       </S.Main>
     </UserProvider>
   );
@@ -207,5 +215,11 @@ const S = {
   Timer: styled(Timer)`
     z-index: 2;
     bottom: 1rem;
+  `,
+  InfoBox: styled(InfoBox)`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0.4rem;
   `,
 };

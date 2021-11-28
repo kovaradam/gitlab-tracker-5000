@@ -9,6 +9,7 @@ import {
 import { useQuery } from '../store/use-query';
 import { useClickOutsideRef } from '../utils/use-click-outside';
 import { useToggle } from '../utils/use-toggle';
+import { useRegisterInfoBox } from './InfoBox';
 import { Popover } from './PopOver';
 
 const GET_AVATAR_URL = gql`
@@ -33,16 +34,20 @@ export const UserIcon: React.FC<Props> = (props) => {
   }, [fetchAvatarUrl]);
 
   const logOut = (): void => {
-    gitlabUrlStorage.delete();
-    gitlabTokenStorage.delete();
-    serviceTokenStorage.delete();
+    [gitlabUrlStorage, gitlabTokenStorage, serviceTokenStorage].forEach((s) =>
+      s.delete(),
+    );
   };
+
+  const registerInfoBox = useRegisterInfoBox('Open user menu');
 
   const avatarUrl = gitlabUrlStorage.get()?.concat(data?.currentUser.avatarUrl ?? '');
 
   return (
     <S.Wrapper {...props} ref={wrapperRef} onClick={isOpenToggle.toggle}>
-      {!isLoading && avatarUrl && <S.AvatarImg src={avatarUrl} alt="user avatar" />}
+      {!isLoading && avatarUrl && (
+        <S.AvatarImg src={avatarUrl} alt="user avatar" {...registerInfoBox} />
+      )}
       <S.DropDownMenu>
         {isOpen && (
           <>

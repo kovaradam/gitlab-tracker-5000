@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { MdOutlinePause } from 'react-icons/md';
 import { getTimeValuesFromMillis } from '../utils/time';
 import { mediaQueries } from '../style/media-queries';
+import { useRegisterInfoBox } from './InfoBox';
 
 type Props = { timestamp: number | null; stopTimer: () => void; className?: string };
 
@@ -28,7 +29,11 @@ export const Timer: React.FC<Props> = ({ timestamp, stopTimer, ...props }) => {
   return (
     <S.Wrapper data-visible={timestamp !== null} {...props}>
       <S.Time>{formatTime(time ?? 0)}</S.Time>
-      <S.StopButton onClick={stopTimer} disabled={timestamp === null}>
+      <S.StopButton
+        onClick={stopTimer}
+        disabled={timestamp === null}
+        {...useRegisterInfoBox('Stop timer')}
+      >
         <MdOutlinePause />
       </S.StopButton>
     </S.Wrapper>

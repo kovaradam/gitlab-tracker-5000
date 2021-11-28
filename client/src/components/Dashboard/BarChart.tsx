@@ -1,21 +1,9 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { ChartProps } from './ChartFactory';
 import { max } from './utils';
 
-export type Data = {
-  color?: string;
-  value: number;
-  title?: string | number;
-  url?: string;
-}[];
-
-export type Props = {
-  className?: string;
-  data?: Data;
-  formatValue?: (value: number) => string;
-};
-
-export const BarChart: React.FC<Props> = ({ data, ...props }) => {
+export const BarChart: React.FC<ChartProps> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }

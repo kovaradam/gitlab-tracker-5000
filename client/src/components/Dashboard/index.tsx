@@ -1,5 +1,4 @@
 import React from 'react';
-import { PieChart } from 'react-minimal-pie-chart';
 import { LabelRenderFunction } from 'react-minimal-pie-chart/types/commonTypes';
 import styled from 'styled-components';
 import { useUser } from '../../store/use-user';
@@ -9,10 +8,10 @@ import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
 import { getDayTimelogs, getIssueTimelogs, getProjectTimelogs } from './data';
 import { Timelog } from './queries';
-import { BarChart } from './BarChart';
 import { dateToHtmlProp, formatTime } from './utils';
-import { LineChart } from './LineChart';
 import { useIssues } from './use-issues';
+import { ChartFactory } from './ChartFactory';
+import { useRegisterInfoBox } from '../InfoBox';
 
 type Props = { className?: string };
 
@@ -71,6 +70,8 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
   const fromInputId = 'from-input';
   const showOverlay = isLoading || !userDetails || projectTimelogs?.length === 0;
 
+  const timeInputInfo = 'Update filter';
+
   return (
     <S.Wrapper className={className}>
       <S.TimeRangeInputWrapper>
@@ -82,6 +83,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           onChange={({ target }): void => setFrom(new Date(target.value))}
           max={dateToHtmlProp(to)}
           disabled={isLoading}
+          {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
       <S.TimeRangeInputWrapper>
@@ -93,6 +95,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           min={dateToHtmlProp(from)}
           max={dateToHtmlProp(now)}
           disabled={isLoading}
+          {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
       <S.ChartWrapper>
@@ -100,9 +103,17 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           data={projectTimelogs ?? placeholderData}
           label={renderPieLabel}
           animate
+          info="Total time spent on project"
         />
-        <S.BarChart data={issueTimelogs ?? placeholderData} />
-        <S.LineChart data={dayTimelogs ?? placeholderData} />
+
+        <S.BarChart
+          data={issueTimelogs ?? placeholderData}
+          info="Total time spent on particular issue"
+        />
+        <S.LineChart
+          data={dayTimelogs ?? placeholderData}
+          info="Time spent on given day"
+        />
         {showOverlay && (
           <S.ChartOverlay>
             {projectTimelogs?.length === 0 ? (
@@ -168,15 +179,13 @@ const S = {
       grid-template-rows: 50% 50%;
     }
   `,
-  PieChart: styled(PieChart).attrs(pieChartConfig)`
-    height: 90vmin;
-    grid-row: 1 / 3;
+  PieChart: styled(ChartFactory).attrs({ ...pieChartConfig, type: 'pie' })`
     & text {
       font-size: 0.3rem;
       fill: white;
     }
   `,
-  BarChart: styled(BarChart).attrs({ formatValue: formatTime })`
+  BarChart: styled(ChartFactory).attrs({ formatValue: formatTime, type: 'bar' })`
     height: min-content;
     width: 90%;
     gap: 1rem;
@@ -192,7 +201,7 @@ const S = {
       overflow-x: visible;
     }
   `,
-  LineChart: styled(LineChart).attrs({ formatValue: formatTime })`
+  LineChart: styled(ChartFactory).attrs({ formatValue: formatTime, type: 'line' })`
     height: min-content;
     width: 90%;
     height: 20rem;
@@ -202,6 +211,7 @@ const S = {
 
     @media ${mediaQueries.desktop} {
       grid-row: 2;
+      grid-column: 1 / 3;
       --size: 80%;
       height: var(--size);
       width: var(--size);
@@ -209,6 +219,7 @@ const S = {
       display: flex;
       justify-content: center;
       align-items: center;
+      max-width: 1200px;
     }
   `,
   ChartOverlay: styled.div`

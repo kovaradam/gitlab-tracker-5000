@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Props } from './BarChart';
+import { ChartProps } from './ChartFactory';
 import { max } from './utils';
 
 const svgFraction = 10;
 
-export const LineChart: React.FC<Props> = ({ data, ...props }) => {
+export const LineChart: React.FC<ChartProps> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }
@@ -43,7 +43,6 @@ export const LineChart: React.FC<Props> = ({ data, ...props }) => {
   }));
 
   const mainColor = data[0]?.color || 'var(--chart-grey)';
-  console.log(mainColor);
 
   return (
     <S.Wrapper {...props}>

@@ -25,6 +25,7 @@ export const AddTimeDialog: React.FC<Props> = ({ setTrackedTime, hide }) => {
     const timeToAdd = (hours * 60 * 60 + minutes * 60) * 1000;
 
     if (timeToAdd <= 0) {
+      inputs[0].current?.focus();
       return;
     }
 
@@ -33,6 +34,14 @@ export const AddTimeDialog: React.FC<Props> = ({ setTrackedTime, hide }) => {
   };
 
   const [hoursInput, minutesInput] = inputs;
+
+  React.useLayoutEffect(() => {
+    const element = hoursInput.current;
+    if (!element) {
+      return;
+    }
+    element.focus();
+  }, [hoursInput]);
 
   return (
     <S.Wrapper hide={hide}>

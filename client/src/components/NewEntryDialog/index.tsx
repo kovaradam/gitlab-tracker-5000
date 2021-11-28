@@ -106,6 +106,14 @@ export const NewEntryDialog: React.FC<Props> = ({
     }
   });
 
+  React.useLayoutEffect(() => {
+    const element = issueInputRef.current;
+    if (!element) {
+      return;
+    }
+    element.focus();
+  }, []);
+
   const timeValues = getTimeValuesFromMillis(timeLeft);
 
   const issueInputId = 'issue-input';
