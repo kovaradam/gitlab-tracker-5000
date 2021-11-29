@@ -83,11 +83,11 @@ export function useQueryWithCursor<DataType>(
         variables = variables ?? {};
         while (hasNextPage) {
           const data = await client.request<DataType>(query, variables);
-          setData((prevData) => mergeData(prevData, data));
+          returnData = mergeData(returnData, data);
+          setData(returnData);
           const { pageInfo } = asPagination(data);
           hasNextPage = pageInfo.hasNextPage;
           (variables as PageVariables).after = pageInfo.endCursor;
-          returnData = mergeData(returnData, data);
         }
         setIsLoading(false);
         return returnData;

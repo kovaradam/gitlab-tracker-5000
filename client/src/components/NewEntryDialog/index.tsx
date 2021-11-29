@@ -19,6 +19,7 @@ import { AnimatedValue } from '../AnimatedValue';
 import { createIssueNote } from './utils';
 import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
+import { useIssues } from '../Dashboard/use-issues';
 
 type Props = {
   discardEntry: (success?: boolean) => void;
@@ -33,7 +34,8 @@ export const NewEntryDialog: React.FC<Props> = ({
 }) => {
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
   const issueInputRef = React.useRef<HTMLInputElement>(null);
-  const [fetchIssues, { data, isLoading }] =
+  const [fetchDashboardIssues] = useIssues();
+  const [fetchSearchIssues, { data, isLoading }] =
     useQuery<GetProjectsQueryResponse>(GET_PROJECTS);
 
   const [submitIssue] = useQuery<SubmitIssueQueryResponse>(SUBMIT_ISSUE);
@@ -50,10 +52,10 @@ export const NewEntryDialog: React.FC<Props> = ({
 
   const submit: React.FormEventHandler = (event): void => {
     event.preventDefault();
-    cards?.forEach((card) => {
+    const results = cards?.map(async (card) => {
       updateCard({ ...card, isLoading: true });
       const issueNote = createIssueNote(card);
-      submitIssue(issueNote).then((response) => {
+      return await submitIssue(issueNote).then((response) => {
         if (response === null || response.createNote.errors.length > 1) {
           updateCard({ ...card, isError: true, isLoading: false });
           return;
@@ -62,6 +64,7 @@ export const NewEntryDialog: React.FC<Props> = ({
         setTrackedTime((prev) => (prev ?? 0) - card.time);
       });
     });
+    Promise.all(results).then(() => fetchDashboardIssues());
   };
 
   const searchInputHandler: React.ChangeEventHandler<HTMLInputElement> = ({
@@ -71,16 +74,26 @@ export const NewEntryDialog: React.FC<Props> = ({
       return;
     }
     const variables = { search: value };
-    fetchIssues(variables);
+    fetchSearchIssues(variables);
   };
 
-  const searchResultHandler = (issue: Issue) => {
+  const createSearchResultClickHandler = (issue: Issue) => {
     return (): void => {
       if (issueInputRef.current) {
         issueInputRef.current.value = '';
         issueInputRef.current.blur();
       }
       addCard({ ...issue, time: timeLeft });
+    };
+  };
+
+  const createSearchResultKeyHandler = (issue: Issue): React.KeyboardEventHandler => {
+    const clickHandler = createSearchResultClickHandler(issue);
+    return (event): void => {
+      if (event.key !== 'Enter') {
+        return;
+      }
+      clickHandler();
     };
   };
 
@@ -147,12 +160,12 @@ export const NewEntryDialog: React.FC<Props> = ({
             {isLoading ? (
               <S.SearchResultPlaceholder data-loading>Loading</S.SearchResultPlaceholder>
             ) : issues?.length ? (
-              issues.map((issue, index) => (
+              issues.map((issue) => (
                 <S.SearchResult
                   key={issue.id}
-                  onClick={searchResultHandler(issue)}
-                  onKeyDown={searchResultHandler(issue)}
-                  tabIndex={index}
+                  onClick={createSearchResultClickHandler(issue)}
+                  onKeyDown={createSearchResultKeyHandler(issue)}
+                  tabIndex={0}
                 >
                   <span>{formatTitle(issue)}</span>
                   <span>{issue.projectName}</span>

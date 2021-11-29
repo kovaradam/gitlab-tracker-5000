@@ -11,7 +11,6 @@ const IssuesContext = React.createContext<HookReturnType>(
 
 const IssuesProvider: React.FC = ({ children }) => {
   const value = useQueryWithCursor<GetTimelogsResponse>(GET_TIMELOGS, mergeProjectData);
-
   return <IssuesContext.Provider value={value}>{children}</IssuesContext.Provider>;
 };
 

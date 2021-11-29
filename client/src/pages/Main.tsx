@@ -14,7 +14,7 @@ import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
-import { useIssues, withIssues } from '../components/Dashboard/use-issues';
+import { withIssues } from '../components/Dashboard/use-issues';
 import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
 
 const trackedTimeStorage = createStorage('tracked-time');
@@ -31,7 +31,6 @@ export const Main = withIssues(() => {
   const [trackedTime, setTrackedTime] = React.useState<number | null>(
     !!initLastTimestamp ? Number(initLastTimestamp) : null,
   );
-  const [fetchIssues] = useIssues();
 
   const [isAddTimeDialogVisible, timeDialogToggle] = useToggle(false);
   const [isSuccessAlertVisible, successAlertToggle] = useToggle(false);
@@ -60,9 +59,6 @@ export const Main = withIssues(() => {
   const discardEntry = (success = false): void => {
     setTrackedTime(null);
     successAlertToggle.set(success);
-    if (success) {
-      fetchIssues();
-    }
   };
 
   const isEntryDialogVisible = trackedTime !== null;
