@@ -123,6 +123,14 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
             )}
           </S.ChartOverlay>
         )}
+        <S.RefreshButton
+          disabled={isLoading}
+          onClick={(): void => {
+            fetchTimelogData();
+          }}
+        >
+          Refresh
+        </S.RefreshButton>
       </S.ChartWrapper>
     </S.Wrapper>
   );
@@ -144,6 +152,7 @@ const S = {
     justify-self: center;
     font-size: 1rem;
     width: min-content;
+
     &:first-child {
       grid-column: 1 / 3;
     }
@@ -170,11 +179,12 @@ const S = {
   ChartWrapper: styled.section`
     grid-area: 2 / 1 / 3 / 4;
     display: grid;
-    gap: 2rem;
+    gap: 5rem;
     overflow: auto;
 
     @media ${mediaQueries.desktop} {
       display: grid;
+      gap: 1rem;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 50% 50%;
     }
@@ -204,7 +214,7 @@ const S = {
   LineChart: styled(ChartFactory).attrs({ formatValue: formatTime, type: 'line' })`
     height: min-content;
     width: 90%;
-    height: 20rem;
+    height: min-content;
     gap: 1rem;
     align-self: start;
     justify-self: center;
@@ -224,6 +234,7 @@ const S = {
   `,
   ChartOverlay: styled.div`
     top: 0;
+    z-index: 1;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -231,9 +242,21 @@ const S = {
     justify-content: center;
     align-items: center;
     background-color: #ffffff57;
-
+    pointer-events: none;
     & svg {
       fill: var(--main-color);
+    }
+  `,
+  RefreshButton: styled.button`
+    width: min-content;
+    place-self: center;
+    margin: 1rem;
+    padding: 1rem;
+
+    @media ${mediaQueries.desktop} {
+      position: absolute;
+      right: 3rem;
+      top: 100%;
     }
   `,
   NoDataMessage: styled.label`

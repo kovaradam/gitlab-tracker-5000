@@ -14,6 +14,7 @@ body {
   --header-height: 5rem;
   --shadow-offset: 2px;
   --base-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 grey;
+  --desktop-padding: 3rem;
 }
 
 * {

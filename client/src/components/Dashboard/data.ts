@@ -65,6 +65,7 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
   }
 
   const dateTimelogMap: Record<string, number> = {};
+
   data?.projects.nodes
     .filter(({ issues }) => issues.nodes.length > 0)
     .map(({ issues }) => issues.nodes)
@@ -79,13 +80,7 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
     .sort(([prev], [next]) => prev.getTime() - next.getTime())
     .map(
       ([date, totalTimeSpent]) =>
-        [
-          date.toLocaleDateString('en', {
-            day: '2-digit',
-            month: '2-digit',
-          }),
-          totalTimeSpent,
-        ] as [string, number],
+        [formatDateLabel(date), totalTimeSpent] as [string, number],
     )
     .forEach(([spentAt, totalTimeSpent]) => {
       if (!dateTimelogMap[spentAt]) {
@@ -100,3 +95,19 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
     color: colors[0],
   }));
 };
+
+function formatDateLabel(date: Date): string {
+  const now = new Date();
+  if (
+    date.getDay() === now.getDay() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  ) {
+    return 'today';
+  }
+
+  return date.toLocaleDateString('en', {
+    day: '2-digit',
+    month: '2-digit',
+  });
+}

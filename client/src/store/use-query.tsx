@@ -74,14 +74,14 @@ export function useQueryWithCursor<DataType>(
         throw new Error(`GraphQL client has not been initialized or isn't provided`);
       }
       setData(null);
-      setIsLoading(true);
-      setError(null);
       try {
         // ew
         let hasNextPage = true;
         let returnData: DataType | null = null;
         variables = variables ?? {};
         while (hasNextPage) {
+          setIsLoading(true);
+          setError(null);
           const data = await client.request<DataType>(query, variables);
           returnData = mergeData(returnData, data);
           setData(returnData);

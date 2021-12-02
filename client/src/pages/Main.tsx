@@ -146,9 +146,18 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media ${mediaQueries.desktop} {
+      position: absolute;
+      left: var(--desktop-padding);
+    }
   `,
   UserIcon: styled(UserIcon)`
     grid-column: 3;
+    @media ${mediaQueries.desktop} {
+      position: absolute;
+      right: var(--desktop-padding);
+    }
   `,
   Main: styled.main`
     display: grid;
@@ -188,7 +197,7 @@ const S = {
     justify-self: center;
     width: 50%;
     margin-bottom: 1rem;
-    z-index: 1;
+    z-index: 2;
 
     &[data-loading='true']:after {
       content: '.';
@@ -213,9 +222,19 @@ const S = {
     bottom: 1rem;
   `,
   InfoBox: styled(InfoBox)`
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 0.4rem;
+    display: none;
+    @media ${mediaQueries.desktop} {
+      display: initial;
+      position: absolute;
+      z-index: 2;
+      bottom: 0;
+      left: 0;
+      padding: 0.4rem;
+      font-size: 1rem;
+
+      &:empty {
+        display: none;
+      }
+    }
   `,
 };
