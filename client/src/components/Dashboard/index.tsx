@@ -243,6 +243,8 @@ const S = {
     align-items: center;
     background-color: #ffffff57;
     pointer-events: none;
+    backdrop-filter: blur(2px);
+
     & svg {
       fill: var(--main-color);
     }

@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 
 export const GET_TIMELOGS = gql`
   query getTimelogs($after: String) {
-    projects(membership: true, searchNamespaces: true, after: $after) {
+    projects(membership: true, after: $after) {
       nodes {
         name
         issues {
