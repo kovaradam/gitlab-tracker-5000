@@ -25,7 +25,6 @@ export function useQuery<DataType>(
   { data: DataType | null; isLoading: boolean; error: Error | null },
 ] {
   const client = React.useContext(QueryContext);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
   const [data, setData] = React.useState<DataType | null>(null);
 
@@ -34,23 +33,20 @@ export function useQuery<DataType>(
       if (!client) {
         throw new Error(`GraphQL client has not been initialized or isn't provided`);
       }
-      setIsLoading(true);
       setError(null);
       try {
         const data = await client.request<DataType>(query, variables);
         setData(data);
-        setIsLoading(false);
         return data;
       } catch (error) {
-        setIsLoading(false);
         setError(error as Error);
         return null;
       }
     },
-    [setIsLoading, setData, setError, client, query],
+    [setData, setError, client, query],
   );
 
-  return [fetch, { data, isLoading, error }];
+  return [fetch, { data, isLoading: data === null && error === null, error }];
 }
 
 type Pagination = { pageInfo: { hasNextPage: boolean; endCursor: string } };
@@ -79,6 +75,7 @@ export function useQueryWithCursor<DataType>(
         let hasNextPage = true;
         let returnData: DataType | null = null;
         variables = variables ?? {};
+
         while (hasNextPage) {
           setIsLoading(true);
           setError(null);
@@ -89,6 +86,7 @@ export function useQueryWithCursor<DataType>(
           hasNextPage = pageInfo.hasNextPage;
           (variables as PageVariables).after = pageInfo.endCursor;
         }
+
         setIsLoading(false);
         return returnData;
       } catch (error) {
@@ -103,7 +101,7 @@ export function useQueryWithCursor<DataType>(
   return [fetch, { data, isLoading, error }];
 }
 
-// ew
+// create return data as paginated object
 function asPagination(data: unknown): Pagination {
   const dataRecord = data as Record<string, unknown>;
   return dataRecord[Object.keys(dataRecord)[0] as keyof typeof data] as Pagination;

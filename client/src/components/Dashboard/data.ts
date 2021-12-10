@@ -99,7 +99,7 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
 function formatDateLabel(date: Date): string {
   const now = new Date();
   if (
-    date.getDay() === now.getDay() &&
+    date.getDate() === now.getDate() &&
     date.getMonth() === now.getMonth() &&
     date.getFullYear() === now.getFullYear()
   ) {

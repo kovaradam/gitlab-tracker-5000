@@ -55,14 +55,14 @@ const S = {
   `,
   BarWrapper: styled.span`
     position: relative;
-    display: flex;
+    display: grid;
     width: 100%;
     align-items: center;
+    flex-grow: 1;
   `,
   BarVolume: styled.div`
     transform-origin: left;
-    height: 2rem;
-
+    min-height: 2rem;
     animation: ${keyframes`
     from {transform: scaleX(0%);}
     to {transform: scaleX(100%);}

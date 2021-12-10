@@ -27,11 +27,13 @@ const placeholderData = [30, 20, 40, 10].map((value, index) => ({
   color: index % 2 === 0 ? '#ebe5e5' : 'var(--grey)',
 }));
 
+const dayInMs = 24 * 60 * 60 * 1000;
+
 export const Dashboard: React.FC<Props> = ({ className }) => {
-  const [now, week] = [new Date(), 7 * 24 * 60 * 60 * 1000];
+  const [now, weekInMs] = [Date.now(), 7 * dayInMs];
   const userDetails = useUser();
-  const [from, setFrom] = React.useState<Date>(new Date(now.getTime() - week));
-  const [to, setTo] = React.useState<Date>(now);
+  const [from, setFrom] = React.useState<Date>(new Date(now - weekInMs));
+  const [to, setTo] = React.useState<Date>(new Date(now + dayInMs));
   const [fetchTimelogData, { data, isLoading }] = useIssues();
 
   React.useEffect(() => {
@@ -74,7 +76,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
 
   return (
     <S.Wrapper className={className}>
-      <S.TimeRangeInputWrapper>
+      <S.TimeRangeInputWrapper disabled={isLoading}>
         <label>from</label>
         <S.DateInput
           id={fromInputId}
@@ -82,19 +84,17 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
           value={dateToHtmlProp(from)}
           onChange={({ target }): void => setFrom(new Date(target.value))}
           max={dateToHtmlProp(to)}
-          disabled={isLoading}
           {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
-      <S.TimeRangeInputWrapper>
+      <S.TimeRangeInputWrapper disabled={isLoading}>
         <label>to</label>
         <S.DateInput
           type="date"
           value={dateToHtmlProp(to)}
           onChange={({ target }): void => setTo(new Date(target.value))}
           min={dateToHtmlProp(from)}
-          max={dateToHtmlProp(now)}
-          disabled={isLoading}
+          max={dateToHtmlProp(new Date(now))}
           {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
@@ -145,13 +145,21 @@ const S = {
     grid-template-columns: 1fr 1fr 2fr;
     grid-template-rows: 6rem 1fr;
   `,
-  TimeRangeInputWrapper: styled.span`
+  TimeRangeInputWrapper: styled.fieldset`
     position: relative;
     background-color: white;
     align-self: center;
     justify-self: center;
     font-size: 1rem;
     width: min-content;
+    z-index: 2;
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    &[disabled] {
+      z-index: 0;
+    }
 
     &:first-child {
       grid-column: 1 / 3;
@@ -254,11 +262,12 @@ const S = {
     place-self: center;
     margin: 1rem;
     padding: 1rem;
+    background-color: white;
 
     @media ${mediaQueries.desktop} {
       position: absolute;
-      right: 3rem;
-      top: 100%;
+      right: var(--desktop-padding);
+      bottom: 0;
     }
   `,
   NoDataMessage: styled.label`
