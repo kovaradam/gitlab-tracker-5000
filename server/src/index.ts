@@ -22,7 +22,9 @@ const [app, router] = [new oak.Application(), new oak.Router()];
 app.use(cors.oakCors());
 app.use(auth);
 
-router.get('/api/timestamp', async ({ response, request }, next) => {
+const timestampRoute = '/api/timestamp';
+
+router.get(timestampRoute, async ({ response, request }, next) => {
   try {
     const token = getToken(request.headers);
     const timestamp = await storage.get(String(token));
@@ -40,7 +42,7 @@ router.get('/api/timestamp', async ({ response, request }, next) => {
   }
 });
 
-router.post('/api/timestamp', async (context) => {
+router.post(timestampRoute, async (context) => {
   try {
     const token = getToken(context.request.headers);
     const timestamp = createTimestamp();
@@ -55,7 +57,7 @@ router.post('/api/timestamp', async (context) => {
   }
 });
 
-router.delete('/api/timestamp', async (context) => {
+router.delete(timestampRoute, async (context) => {
   try {
     const token = getToken(context.request.headers);
 
