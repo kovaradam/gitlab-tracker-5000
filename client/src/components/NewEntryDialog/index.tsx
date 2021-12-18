@@ -20,6 +20,8 @@ import { createIssueNote } from './utils';
 import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
 import { useIssues } from '../Dashboard/use-issues';
+import { usePrompt } from 'utils/use-prompt';
+import { useKeyDown } from 'utils/use-key-down';
 
 type Props = {
   discardEntry: (success?: boolean) => void;
@@ -131,9 +133,17 @@ export const NewEntryDialog: React.FC<Props> = ({
 
   const issueInputId = 'issue-input';
 
+  const { showPrompt, Prompt } = usePrompt();
+
+  const handleCloseAction = (): void => {
+    showPrompt(discardEntry);
+  };
+
+  useKeyDown('Escape', handleCloseAction);
+
   return (
     <S.Wrapper>
-      <S.CloseButton onClick={(): void => discardEntry()}>
+      <S.CloseButton onClick={handleCloseAction}>
         <GrFormClose />
       </S.CloseButton>
       <S.Header>New Entry</S.Header>
@@ -189,6 +199,7 @@ export const NewEntryDialog: React.FC<Props> = ({
           <S.NoIssueMessage htmlFor={issueInputId}>Select an issue</S.NoIssueMessage>
         )}
       </S.Form>
+      <Prompt>Are you sure?</Prompt>
     </S.Wrapper>
   );
 };

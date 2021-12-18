@@ -1,22 +1,29 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styled, { keyframes } from 'styled-components';
 import { mediaQueries } from '../style/media-queries';
 
-export const DialogModal: React.FC<{ className?: string; hide?: () => void }> = ({
-  children,
-  className,
-  hide,
-}) => {
+const modalRoot = document.getElementById('modal-root');
+
+type Props = { className?: string; hide?: () => void };
+
+export const DialogModal: React.FC<Props> = ({ children, className, hide }) => {
   const handleOverlayClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
     if (event.currentTarget !== event.target) {
       return;
     }
     hide?.();
   };
-  return (
-    <S.Overlay onClick={handleOverlayClick}>
+
+  if (!modalRoot) {
+    return null;
+  }
+
+  return ReactDOM.createPortal(
+    <S.Overlay onMouseDown={handleOverlayClick}>
       <S.Wrapper className={className}>{children}</S.Wrapper>;
-    </S.Overlay>
+    </S.Overlay>,
+    modalRoot,
   );
 };
 

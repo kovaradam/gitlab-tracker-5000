@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useKeyDown } from 'utils/use-key-down';
 import { FormStyle } from '../style/form';
 import { DialogModal } from './DialogModal';
 
@@ -42,6 +43,8 @@ export const AddTimeDialog: React.FC<Props> = ({ setTrackedTime, hide }) => {
     }
     element.focus();
   }, [hoursInput]);
+
+  useKeyDown('Escape', hide);
 
   return (
     <S.Wrapper hide={hide}>
