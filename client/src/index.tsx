@@ -1,21 +1,29 @@
-import { DEV } from 'config';
+import { DEV, EXTENSION } from 'config';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { App } from './pages';
 import { register } from './register-sw';
 
+const rootElement = document.getElementById('root');
+
+if (EXTENSION && rootElement) {
+  rootElement.style.width = '20rem';
+  rootElement.style.height = '35rem';
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-  document.getElementById('root'),
+  rootElement,
   () => {
-    if (DEV) {
+    const { location } = window;
+
+    if (DEV || EXTENSION) {
       return;
     }
 
-    const { location } = window;
     if (location.protocol !== 'https:') {
       location.replace(`https:${location.href.substring(location.protocol.length)}`);
     }

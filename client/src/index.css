@@ -1,3 +1,14 @@
+:root {
+  --main-color: #ff596a;
+  --chart-grey: #444444;
+  --secondary-color: #4848ef;
+  --grey: #e6e6e6;
+  --header-height: 5rem;
+  --shadow-offset: 2px;
+  --base-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 grey;
+  --desktop-padding: 3rem;
+}
+
 body {
   margin: 0;
   font-size: 10px;
@@ -7,14 +18,6 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --main-color: #ff596a;
-  --chart-grey: #444444;
-  --secondary-color: #4848ef;
-  --grey: #e6e6e6;
-  --header-height: 5rem;
-  --shadow-offset: 2px;
-  --base-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 grey;
-  --desktop-padding: 3rem;
 }
 
 * {
