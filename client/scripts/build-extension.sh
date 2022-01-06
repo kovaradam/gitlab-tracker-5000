@@ -19,6 +19,6 @@ mkdir -p $ARTIFACTS_DIR
 
 cd $EXTENSION_DIR
 
-zip ../$ARTIFACTS_DIR/extension.zip ./*
+zip -r ../$ARTIFACTS_DIR/extension.zip ./*
 
 cd ..
