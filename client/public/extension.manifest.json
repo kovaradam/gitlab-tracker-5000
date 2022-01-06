@@ -1,15 +1,9 @@
 {
-  "short_name": "GT-5000",
-  "start_url": "./index.html",
-  "name": "Gitlab-tracker-5000",
   "icons": {
     "192": "logo192.png",
     "512": "logo512.png"
   },
-  "display": "standalone",
-  "theme_color": "#ff596a",
-  "background_color": "#ffffff",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "manifest_version": 3,
   "action": {
     "default_icon": "logo512.png",

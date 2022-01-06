@@ -13,6 +13,10 @@
 /extension
 
 *.pem
+*.zip
+*.crx
+
+artifacts
 
 # misc
 .DS_Store

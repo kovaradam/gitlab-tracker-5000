@@ -2,6 +2,7 @@
   "short_name": "GT-5000",
   "start_url": "./index.html",
   "name": "Gitlab-tracker-5000",
+  "description": "Track your time with GitLab",
   "icons": [
     {
       "src": "favicon.ico",
