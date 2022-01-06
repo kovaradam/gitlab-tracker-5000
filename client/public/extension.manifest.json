@@ -9,5 +9,12 @@
     "default_icon": "logo512.png",
     "default_popup": "index.html"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage"],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+G"
+      }
+    }
+  }
 }
