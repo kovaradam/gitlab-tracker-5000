@@ -6,7 +6,7 @@
   "version": "0.0.2",
   "manifest_version": 3,
   "action": {
-    "default_icon": "logo512.png",
+    "default_icon": "logo-tr512.png",
     "default_popup": "index.html"
   },
   "permissions": ["storage"],
