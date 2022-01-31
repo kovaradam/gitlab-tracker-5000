@@ -116,7 +116,7 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
         />
         {showOverlay && (
           <S.ChartOverlay>
-            {projectTimelogs?.length === 0 ? (
+            {!isLoading && projectTimelogs?.length === 0 ? (
               <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
             ) : (
               <Spinner />
