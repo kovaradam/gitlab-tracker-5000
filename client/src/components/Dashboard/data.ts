@@ -4,9 +4,12 @@ import { GetTimelogsResponse, Timelog } from './queries';
 
 const colors = ['var(--main-color)', 'tomato', '#ff8a50'];
 
+type DateRange = { from: Date; to: Date };
+
 type DataTransformer = (
   data: GetTimelogsResponse | null,
   checkTimelog: (timelog: Timelog) => boolean,
+  range: DateRange,
 ) => DataEntry[] | undefined;
 
 export const getProjectTimelogs: DataTransformer = (data, checkTimelog) => {
@@ -59,12 +62,32 @@ export const getIssueTimelogs: DataTransformer = (data, checkTimelog) => {
     }));
 };
 
-export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
+function getDaysInRange({ from, to }: DateRange): Date[] {
+  const dayInMs = 24 * 60 * 60 * 1000;
+  const datesInRange: Date[] = [];
+  const [fromDayInMs, toDayInMs] = [from.getTime(), to.getTime()];
+
+  for (let i = fromDayInMs; i < toDayInMs; i += dayInMs) {
+    const newDate = new Date(i);
+
+    datesInRange.push(newDate);
+  }
+
+  return datesInRange;
+}
+
+export const getDayTimelogs: DataTransformer = (data, checkTimelog, range) => {
   if (!data) {
     return undefined;
   }
+  const dateFormatter = formatDateLabel;
 
   const dateTimelogMap: Record<string, number> = {};
+
+  getDaysInRange(range).forEach((dateInRange) => {
+    const dateLabel = dateFormatter(dateInRange);
+    dateTimelogMap[dateLabel] = 0;
+  });
 
   data?.projects.nodes
     .filter(({ issues }) => issues.nodes.length > 0)
@@ -74,13 +97,13 @@ export const getDayTimelogs: DataTransformer = (data, checkTimelog) => {
     .flat()
     .filter(checkTimelog)
     .map(
-      ({ timeSpent, spentAt }) => [new Date(spentAt), timeSpent * 1000] as [Date, number],
+      ({ spentAt, timeSpent }) => [new Date(spentAt), timeSpent * 1000] as [Date, number],
     )
     .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
     .sort(([prev], [next]) => prev.getTime() - next.getTime())
     .map(
       ([date, totalTimeSpent]) =>
-        [formatDateLabel(date), totalTimeSpent] as [string, number],
+        [dateFormatter(date), totalTimeSpent] as [string, number],
     )
     .forEach(([spentAt, totalTimeSpent]) => {
       if (!dateTimelogMap[spentAt]) {

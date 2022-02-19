@@ -54,9 +54,9 @@ export const Dashboard: React.FC<Props> = ({ className }) => {
   const [projectTimelogs, issueTimelogs, dayTimelogs] = React.useMemo(
     () =>
       [getProjectTimelogs, getIssueTimelogs, getDayTimelogs].map((t) =>
-        t(data, checkTimelog),
+        t(data, checkTimelog, { from, to }),
       ),
-    [checkTimelog, data],
+    [checkTimelog, data, from, to],
   );
 
   const renderPieLabel: LabelRenderFunction = ({
