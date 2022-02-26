@@ -7,7 +7,7 @@ import { UserIcon } from '../components/UserIcon';
 import { useTimestamp } from '../store/use-timestamp';
 import { createStorage } from '../utils/storage';
 import { UserProvider } from '../store/use-user';
-import { MdOutlineAddTask } from 'react-icons/all';
+import { MdOutlineAddTask } from 'react-icons/md';
 import { AddTimeDialog } from '../components/AddTimeDialog';
 import { useToggle } from '../utils/use-toggle';
 import { Dashboard } from '../components/Dashboard';

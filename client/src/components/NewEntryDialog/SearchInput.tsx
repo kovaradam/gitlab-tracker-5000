@@ -30,12 +30,17 @@ export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
 
       timeout.current = setTimeout(() => {
         inputProps.onChange?.(event);
-      }, 500);
+      }, 250);
     };
 
     return (
       <S.Wrapper className={className}>
-        <S.Input ref={forwardedRef} {...inputProps} onChange={debounceOnChange} />
+        <S.Input
+          ref={forwardedRef}
+          {...inputProps}
+          onChange={debounceOnChange}
+          autoComplete="off"
+        />
         {isLoading && <S.Spinner />}
         <S.ResultsWrapper>
           {typeof children === 'function' ? children(value) : children}

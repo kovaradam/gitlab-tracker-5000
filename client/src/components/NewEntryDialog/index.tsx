@@ -291,7 +291,7 @@ const S = {
     }
   `,
   SearchResultPlaceholder: styled(SearchResult)`
-    color: var(--grey);
+    color: #9f9f9f;
     &[data-loading]::after {
       content: '';
       animation: ${dots} 2s linear infinite;

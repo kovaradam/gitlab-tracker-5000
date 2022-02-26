@@ -1,5 +1,6 @@
 :root {
   --main-color: #ff596a;
+  --scrollbar-thumb-color: #ffd8d8;
   --chart-grey: #444444;
   --secondary-color: #4848ef;
   --grey: #e6e6e6;
@@ -65,7 +66,7 @@ button:active {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #ffd8d8;
+  background: var(--scrollbar-thumb-color);
 }
 
 *::-webkit-scrollbar-thumb:hover {

@@ -27,12 +27,14 @@ export function useQuery<DataType>(
   const client = React.useContext(QueryContext);
   const [error, setError] = React.useState<Error | null>(null);
   const [data, setData] = React.useState<DataType | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const fetch = React.useCallback(
     async (variables?: Variables) => {
       if (!client) {
         throw new Error(`GraphQL client has not been initialized or isn't provided`);
       }
+      setIsLoading(true);
       setError(null);
       try {
         const data = await client.request<DataType>(query, variables);
@@ -41,12 +43,14 @@ export function useQuery<DataType>(
       } catch (error) {
         setError(error as Error);
         return null;
+      } finally {
+        setIsLoading(false);
       }
     },
     [setData, setError, client, query],
   );
 
-  return [fetch, { data, isLoading: data === null && error === null, error }];
+  return [fetch, { data, isLoading, error }];
 }
 
 type Pagination = { pageInfo: { hasNextPage: boolean; endCursor: string } };

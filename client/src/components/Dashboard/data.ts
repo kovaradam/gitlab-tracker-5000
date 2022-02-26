@@ -2,7 +2,7 @@ import { DataEntry } from 'react-minimal-pie-chart/types/commonTypes';
 import { formatTitle } from '../../utils/issues';
 import { GetTimelogsResponse, Timelog } from './queries';
 
-const colors = ['var(--main-color)', 'tomato', '#ff8a50'];
+const colors = ['var(--main-color)', '#ff9a9a'];
 
 type DateRange = { from: Date; to: Date };
 

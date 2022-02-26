@@ -1,5 +1,4 @@
 import React from 'react';
-import { IssueCard } from './IssueCard';
 import { Issue } from './queries';
 
 export type IssueCard = Issue & {
