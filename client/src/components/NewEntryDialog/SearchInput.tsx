@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { handleRefs } from 'utils/handle-refs';
 import { FormStyle } from '../../style/form';
 import { Spinner } from '../LoadingOverlay';
 
@@ -16,6 +17,8 @@ export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
   ({ isLoading, className, children, ...inputProps }, forwardedRef) => {
     const [value, setValue] = React.useState('');
     const timeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const resultsWrapperRef = React.useRef<HTMLUListElement>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     const debounceOnChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
       setValue(event.target.value ?? '');
@@ -33,16 +36,77 @@ export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
       }, 250);
     };
 
+    const changeFocusByArrowKey = React.useCallback((event: KeyboardEvent): void => {
+      const currentElement = event.target as HTMLElement;
+
+      if (!currentElement || !resultsWrapperRef?.current) {
+        return;
+      }
+
+      const [isUp, isDown] = ['ArrowUp', 'ArrowDown'].map((key) => event.key === key);
+
+      if (!isUp && !isDown) {
+        return;
+      }
+
+      if (currentElement === inputRef?.current && isDown) {
+        (resultsWrapperRef.current.firstChild as HTMLElement)?.focus();
+        return;
+      }
+
+      if (isDown) {
+        (currentElement?.nextElementSibling as HTMLElement)?.focus();
+        return;
+      } else {
+        if (!currentElement?.previousElementSibling) {
+          inputRef?.current?.focus();
+          return;
+        }
+        (currentElement?.previousElementSibling as HTMLElement).focus();
+      }
+    }, []);
+
+    React.useEffect(() => {
+      const element = inputRef?.current;
+      if (!element) {
+        return;
+      }
+      element.addEventListener('keydown', changeFocusByArrowKey);
+
+      return (): void => {
+        element.removeEventListener('keydown', changeFocusByArrowKey);
+      };
+    }, [changeFocusByArrowKey]);
+
+    React.useEffect(() => {
+      const element = resultsWrapperRef?.current;
+      if (!element) {
+        return;
+      }
+      const children = element.children;
+      for (let i = 0; i < children?.length; i++) {
+        (children[i] as HTMLElement).addEventListener('keydown', changeFocusByArrowKey);
+      }
+      return (): void => {
+        for (let i = 0; i < children?.length; i++) {
+          (children[i] as HTMLElement).removeEventListener(
+            'keydown',
+            changeFocusByArrowKey,
+          );
+        }
+      };
+    }, [changeFocusByArrowKey, children]);
+
     return (
       <S.Wrapper className={className}>
         <S.Input
-          ref={forwardedRef}
+          ref={handleRefs(forwardedRef, inputRef)}
           {...inputProps}
           onChange={debounceOnChange}
           autoComplete="off"
         />
         {isLoading && <S.Spinner />}
-        <S.ResultsWrapper>
+        <S.ResultsWrapper ref={resultsWrapperRef}>
           {typeof children === 'function' ? children(value) : children}
         </S.ResultsWrapper>
       </S.Wrapper>
