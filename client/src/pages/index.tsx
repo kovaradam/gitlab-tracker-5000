@@ -6,7 +6,7 @@ import { QueryProvider } from '../store/use-query';
 import { Login } from './Login';
 import { Main } from './Main';
 
-export const App: React.FC = () => {
+export const App: React.FC<React.PropsWithChildren<unknown>> = () => {
   const { isLoading, isLoggedIn } = useLogin();
 
   if (isLoading) {

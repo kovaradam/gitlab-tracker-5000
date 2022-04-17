@@ -3,7 +3,7 @@ import './show.css';
 
 type Props = { className?: string };
 
-export const AnimatedValue: React.FC<Props> = ({ children, ...props }) => {
+export const AnimatedValue: React.FC<React.PropsWithChildren<Props>> = ({ children, ...props }) => {
   const prevValue = React.useRef(children);
   const wrapperElement = React.useRef<HTMLSpanElement>(null);
 

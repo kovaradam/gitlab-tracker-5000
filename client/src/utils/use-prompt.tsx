@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 export function usePrompt(): {
   showPrompt: (accept: () => void, reject?: () => void) => void;
-  Prompt: React.FC;
+  Prompt: React.FC<React.PropsWithChildren<unknown>>;
 } {
   const [handles, setHandles] = React.useState<{
     accept: () => void;
@@ -28,7 +28,7 @@ export function usePrompt(): {
     [setHandles],
   );
 
-  const renderPrompt: React.FC = React.useCallback(
+  const renderPrompt: React.FC<React.PropsWithChildren<unknown>> = React.useCallback(
     ({ children }) => {
       if (!handles) {
         return null;

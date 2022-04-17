@@ -5,7 +5,7 @@ import { ChartProps } from './ChartFactory';
 
 type Props = ChartProps;
 
-export const PieChart: React.FC<Props> = ({
+export const PieChart: React.FC<React.PropsWithChildren<Props>> = ({
   className,
   onMouseEnter,
   onMouseLeave,

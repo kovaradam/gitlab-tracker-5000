@@ -7,7 +7,7 @@ const modalRoot = document.getElementById('modal-root');
 
 type Props = { className?: string; hide?: () => void };
 
-export const DialogModal: React.FC<Props> = ({ children, className, hide }) => {
+export const DialogModal: React.FC<React.PropsWithChildren<Props>> = ({ children, className, hide }) => {
   const handleOverlayClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
     if (event.currentTarget !== event.target) {
       return;

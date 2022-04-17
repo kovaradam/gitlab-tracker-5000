@@ -14,7 +14,7 @@ const GET_USER = gql`
   }
 `;
 
-export const UserProvider: React.FC = ({ children }) => {
+export const UserProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const [fetchUser, { data }] = useQuery<{ currentUser: { username: string } }>(GET_USER);
 
   React.useEffect(() => {

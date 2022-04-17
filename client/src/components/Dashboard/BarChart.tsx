@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { ChartProps } from './ChartFactory';
 import { max } from './utils';
 
-export const BarChart: React.FC<ChartProps> = ({ data, ...props }) => {
+export const BarChart: React.FC<React.PropsWithChildren<ChartProps>> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }

@@ -6,7 +6,7 @@ import { gitlabUrlStorage, gitlabTokenStorage } from '../config/storage';
 
 const QueryContext = React.createContext<GraphQLClient | null>(null);
 
-export const QueryProvider: React.FC = (props) => {
+export const QueryProvider: React.FC<React.PropsWithChildren<unknown>> = (props) => {
   const client = React.useMemo(() => {
     const [endpoint, token] = [gitlabUrlStorage.get(), gitlabTokenStorage.get()];
     if (!endpoint || !token) {

@@ -9,7 +9,7 @@ type Props = {
   hide: () => void;
 };
 
-export const AddTimeDialog: React.FC<Props> = ({ setTrackedTime, hide }) => {
+export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({ setTrackedTime, hide }) => {
   const inputs = [
     React.useRef<HTMLInputElement>(null),
     React.useRef<HTMLInputElement>(null),

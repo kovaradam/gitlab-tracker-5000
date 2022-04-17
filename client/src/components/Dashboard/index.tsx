@@ -29,7 +29,7 @@ const placeholderData = [30, 20, 40, 10].map((value, index) => ({
 
 const dayInMs = 24 * 60 * 60 * 1000;
 
-export const Dashboard: React.FC<Props> = ({ className }) => {
+export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className }) => {
   const [now, weekInMs] = [Date.now(), 7 * dayInMs];
   const userDetails = useUser();
   const [from, setFrom] = React.useState<Date>(new Date(now - weekInMs));

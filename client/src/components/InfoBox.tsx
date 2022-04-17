@@ -5,7 +5,7 @@ import { AnimatedValue } from './AnimatedValue';
 
 type Props = { className?: string };
 
-export const InfoBox: React.FC<Props> = (props) => {
+export const InfoBox: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const [infoText] = useInfoBox();
   return <S.Wrapper {...props}>{infoText}</S.Wrapper>;
 };

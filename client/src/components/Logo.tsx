@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 type Props = { className?: string };
 
-export const Logo: React.FC<Props> = ({ className }) => {
+export const Logo: React.FC<React.PropsWithChildren<Props>> = ({ className }) => {
   return (
     <S.Wrapper className={className}>
       <S.Heading>

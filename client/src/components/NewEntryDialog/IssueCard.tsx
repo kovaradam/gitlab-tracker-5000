@@ -14,7 +14,7 @@ export type Props = {
   updateCard: (card: IssueCardType) => void;
 };
 
-export const IssueCard: React.FC<Props> = ({
+export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
   card,
   timeLeft,
   removeCard,

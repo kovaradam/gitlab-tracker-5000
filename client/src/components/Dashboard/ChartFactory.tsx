@@ -27,13 +27,13 @@ export type ChartProps = {
   onMouseLeave?: () => void;
 };
 
-export const ChartFactory: React.FC<Props & ChartProps> = ({
+export const ChartFactory: React.FC<React.PropsWithChildren<Props & ChartProps>> = ({
   type,
   info,
   ...chartProps
 }) => {
   const registerInfoBox = useRegisterInfoBox(info);
-  const Chart = ((): React.FC => {
+  const Chart = ((): React.FC<React.PropsWithChildren<unknown>> => {
     switch (type) {
       case 'pie':
         return PieChart;

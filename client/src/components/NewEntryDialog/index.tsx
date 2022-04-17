@@ -29,7 +29,7 @@ type Props = {
   setTrackedTime: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-export const NewEntryDialog: React.FC<Props> = ({
+export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
   discardEntry,
   setTrackedTime,
   trackedTime,

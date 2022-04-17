@@ -12,7 +12,7 @@ import { FormStyle } from '../style/form';
 
 const inputs = { gitlabUrl: 'gitlab-url-input', gitlabToken: 'gitlab-token-input' };
 
-export const Login: React.FC = () => {
+export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
   const [errors, setErrors] = React.useState<
     Partial<Record<keyof typeof inputs, boolean>>
   >({});

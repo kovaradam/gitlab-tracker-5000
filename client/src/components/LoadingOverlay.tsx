@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { ImSpinner8 } from 'react-icons/im';
 
-export const LoadingOverlay: React.FC = () => {
+export const LoadingOverlay: React.FC<React.PropsWithChildren<unknown>> = () => {
   return (
     <S.Wrapper>
       <S.Icon />

@@ -7,7 +7,7 @@ import { useRegisterInfoBox } from './InfoBox';
 
 type Props = { timestamp: number | null; stopTimer: () => void; className?: string };
 
-export const Timer: React.FC<Props> = ({ timestamp, stopTimer, ...props }) => {
+export const Timer: React.FC<React.PropsWithChildren<Props>> = ({ timestamp, stopTimer, ...props }) => {
   const [time, setTime] = React.useState<number | null>(null);
 
   React.useEffect(() => {

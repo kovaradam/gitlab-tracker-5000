@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 type Props = { className?: string };
 
-export const Popover: React.FC<Props> = (props) => {
+export const Popover: React.FC<React.PropsWithChildren<Props>> = (props) => {
   return (
     <>
       <S.Wrapper className={props.className}>{props.children}</S.Wrapper>

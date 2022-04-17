@@ -5,7 +5,7 @@ import { max } from './utils';
 
 const svgFraction = 10;
 
-export const LineChart: React.FC<ChartProps> = ({ data, ...props }) => {
+export const LineChart: React.FC<React.PropsWithChildren<ChartProps>> = ({ data, ...props }) => {
   if (!data) {
     return null;
   }

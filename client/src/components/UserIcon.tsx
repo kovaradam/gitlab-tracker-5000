@@ -22,7 +22,7 @@ const GET_AVATAR_URL = gql`
 
 type Props = { className?: string };
 
-export const UserIcon: React.FC<Props> = (props) => {
+export const UserIcon: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const [isOpen, isOpenToggle] = useToggle();
   const wrapperRef = useClickOutsideRef<HTMLButtonElement>(isOpenToggle.off);
 

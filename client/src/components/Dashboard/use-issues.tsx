@@ -9,7 +9,7 @@ const IssuesContext = React.createContext<HookReturnType>(
   null as unknown as HookReturnType,
 );
 
-const IssuesProvider: React.FC = ({ children }) => {
+const IssuesProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const value = useQueryWithCursor<GetTimelogsResponse>(GET_TIMELOGS, mergeProjectData);
   return <IssuesContext.Provider value={value}>{children}</IssuesContext.Provider>;
 };
@@ -25,8 +25,8 @@ export function useIssues(): [
   return React.useContext(IssuesContext);
 }
 
-export function withIssues<Props>(Component: React.FC<Props>): React.FC<Props> {
-  return (props: Props): ReturnType<React.FC> => (
+export function withIssues<Props>(Component: React.FC<React.PropsWithChildren<Props>>): React.FC<React.PropsWithChildren<Props>> {
+  return (props: Props): ReturnType<React.FC<React.PropsWithChildren<unknown>>> => (
     <IssuesProvider>
       <Component {...props} />
     </IssuesProvider>
