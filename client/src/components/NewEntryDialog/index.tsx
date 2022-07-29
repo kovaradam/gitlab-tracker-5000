@@ -5,7 +5,7 @@ import { getTimeValuesFromMillis } from '../../utils/time';
 import { FormStyle } from '../../style/form';
 import { IssueCard, Props as IssueCardProps } from './IssueCard';
 import { SearchInput, SearchResult } from './SearchInput';
-import { useGqlQuery } from '../../store/use-query';
+import { queryClient, useGqlQuery } from '../../store/use-query';
 import { GetProjectsQueryResponse, GET_PROJECTS, Issue, submitIssue } from './queries';
 import { IssueCard as IssueCardType, useIssueCards } from './use-issue-cards';
 import { formatTitle } from '../../utils/issues';
@@ -58,7 +58,14 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
         setTrackedTime((prev) => (prev ?? 0) - card.time);
       });
     });
-    Promise.all(results).then(() => fetchDashboardIssues());
+    Promise.all(results)
+      .then(() => {
+        queryClient.invalidateQueries();
+        queryClient.refetchQueries(['dashboard']);
+      })
+      .catch(() => {
+        queryClient.invalidateQueries();
+      });
   };
 
   const searchInputHandler: React.ChangeEventHandler<HTMLInputElement> = ({

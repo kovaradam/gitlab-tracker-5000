@@ -55,7 +55,7 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
     GET_TIMELOGS,
     {
       variables: timelogVariables,
-      queryKey: [timelogVariables],
+      queryKey: ['dashboard', timelogVariables],
     },
   );
 
@@ -68,7 +68,7 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
     GET_PROJECTS,
     {
       variables: { ids: projectIds },
-      queryKey: projectIds,
+      queryKey: ['dashboard', ...projectIds],
     },
   );
 
