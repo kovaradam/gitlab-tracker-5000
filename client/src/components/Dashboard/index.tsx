@@ -1,5 +1,8 @@
 import React from 'react';
-import { LabelRenderFunction } from 'react-minimal-pie-chart/types/commonTypes';
+import {
+  DataEntry,
+  LabelRenderFunction,
+} from 'react-minimal-pie-chart/types/commonTypes';
 import styled from 'styled-components';
 import { useUser } from '../../store/use-user';
 import { FormStyle } from '../../style/form';
@@ -7,11 +10,18 @@ import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
 import { getDayTimelogs, getIssueTimelogs, getProjectTimelogs } from './data';
-import { Timelog } from './queries';
-import { dateToHtmlProp, formatTime } from './utils';
-import { useIssues } from './use-issues';
+import {
+  GetProjectsResponse,
+  GetProjectsVariables,
+  GetTimelogsResponse,
+  GetTimelogsVariables,
+  GET_PROJECTS,
+  GET_TIMELOGS,
+} from './queries';
+import { createGitlabProjectId, dateToHtmlProp, formatTime } from './utils';
 import { ChartFactory } from './ChartFactory';
 import { useRegisterInfoBox } from '../InfoBox';
+import { useGqlQuery } from 'store/use-query';
 
 type Props = { className?: string };
 
@@ -34,30 +44,47 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
   const userDetails = useUser();
   const [from, setFrom] = React.useState<Date>(new Date(now - weekInMs));
   const [to, setTo] = React.useState<Date>(new Date(now + dayInMs));
-  const [fetchTimelogData, { data, isLoading }] = useIssues();
 
-  React.useEffect(() => {
-    fetchTimelogData();
-  }, [fetchTimelogData]);
+  const timelogVariables = {
+    username: userDetails?.username ?? '',
+    startDate: from.toISOString(),
+    endDate: to.toISOString(),
+  };
 
-  const checkTimelog = React.useCallback(
-    (timelog: Timelog) => {
-      const { spentAt, user } = timelog;
-      const spentAtDateTime = new Date(spentAt).getTime();
-      const timeCheck =
-        spentAtDateTime >= from.getTime() && spentAtDateTime <= to.getTime();
-      return user.username === userDetails?.username && timeCheck;
+  const timelogsResult = useGqlQuery<GetTimelogsResponse, GetTimelogsVariables>(
+    GET_TIMELOGS,
+    {
+      variables: timelogVariables,
+      queryKey: [timelogVariables],
     },
-    [from, to, userDetails],
   );
 
-  const [projectTimelogs, issueTimelogs, dayTimelogs] = React.useMemo(
-    () =>
-      [getProjectTimelogs, getIssueTimelogs, getDayTimelogs].map((t) =>
-        t(data, checkTimelog, { from, to }),
-      ),
-    [checkTimelog, data, from, to],
+  const projectIds =
+    timelogsResult.data?.timelogs?.nodes?.map((timelog) =>
+      createGitlabProjectId(timelog.issue.projectId),
+    ) ?? [];
+
+  const projectsResult = useGqlQuery<GetProjectsResponse, GetProjectsVariables>(
+    GET_PROJECTS,
+    {
+      variables: { ids: projectIds },
+      queryKey: projectIds,
+    },
   );
+
+  const isLoading = timelogsResult.isLoading || projectsResult.isLoading;
+
+  const [projectTimelogs, issueTimelogs, dayTimelogs] =
+    React.useMemo((): Array<DataEntry>[] => {
+      if (!projectsResult.data || !timelogsResult.data) {
+        return [[], [], []];
+      }
+      return [
+        getProjectTimelogs(projectsResult.data, timelogsResult.data),
+        getIssueTimelogs(timelogsResult.data),
+        getDayTimelogs(timelogsResult.data, { from, to }),
+      ];
+    }, [from, to, projectsResult.data, timelogsResult.data]);
 
   const renderPieLabel: LabelRenderFunction = ({
     dataEntry: { title, value },
@@ -69,30 +96,36 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
     return `${title}: ${hours}h ${minutes}m`;
   };
 
-  const fromInputId = 'from-input';
-  const showOverlay = isLoading || !userDetails || projectTimelogs?.length === 0;
+  const [fromInputId, toInputId] = ['from-input', 'to-input'];
+  const showOverlay =
+    isLoading || !userDetails || timelogsResult.data?.timelogs?.nodes.length === 0;
 
   const timeInputInfo = 'Update filter';
 
   return (
     <S.Wrapper className={className}>
       <S.TimeRangeInputWrapper disabled={isLoading}>
-        <label>from</label>
+        <label htmlFor={fromInputId}>from</label>
         <S.DateInput
           id={fromInputId}
           type="date"
           value={dateToHtmlProp(from)}
-          onChange={({ target }): void => setFrom(new Date(target.value))}
+          onChange={({ target }): void =>
+            setFrom(target.value ? new Date(target.value) : new Date())
+          }
           max={dateToHtmlProp(to)}
           {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
       <S.TimeRangeInputWrapper disabled={isLoading}>
-        <label>to</label>
+        <label htmlFor={toInputId}>to</label>
         <S.DateInput
           type="date"
+          id={toInputId}
           value={dateToHtmlProp(to)}
-          onChange={({ target }): void => setTo(new Date(target.value))}
+          onChange={({ target }): void =>
+            setTo(target.value ? new Date(target.value) : new Date())
+          }
           min={dateToHtmlProp(from)}
           max={dateToHtmlProp(new Date(now))}
           {...useRegisterInfoBox(timeInputInfo)}
@@ -126,7 +159,7 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
         <S.RefreshButton
           disabled={isLoading}
           onClick={(): void => {
-            fetchTimelogData();
+            timelogsResult.refetch();
           }}
         >
           Refresh

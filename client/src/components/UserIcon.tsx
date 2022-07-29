@@ -6,7 +6,7 @@ import {
   gitlabTokenStorage,
   serviceTokenStorage,
 } from '../config/storage';
-import { useQuery } from '../store/use-query';
+import { useGqlQuery } from '../store/use-query';
 import { useClickOutsideRef } from '../utils/use-click-outside';
 import { useToggle } from '../utils/use-toggle';
 import { useRegisterInfoBox } from './InfoBox';
@@ -26,12 +26,10 @@ export const UserIcon: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const [isOpen, isOpenToggle] = useToggle();
   const wrapperRef = useClickOutsideRef<HTMLButtonElement>(isOpenToggle.off);
 
-  const [fetchAvatarUrl, { data, isLoading }] =
-    useQuery<{ currentUser: { avatarUrl: string } }>(GET_AVATAR_URL);
-
-  React.useEffect(() => {
-    fetchAvatarUrl();
-  }, [fetchAvatarUrl]);
+  const { data, isLoading } = useGqlQuery<{ currentUser: { avatarUrl: string } }>(
+    GET_AVATAR_URL,
+    { queryKey: ['avatar'] },
+  );
 
   const logOut = (): void => {
     [gitlabUrlStorage, gitlabTokenStorage, serviceTokenStorage].forEach((s) =>

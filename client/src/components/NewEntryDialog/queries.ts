@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request';
+import { gqlClient } from 'store/use-query';
 
 export const GET_PROJECTS = gql`
   query getIssues($search: String) {
@@ -50,3 +51,14 @@ export type SubmitIssueQueryResponse = {
     errors: string[];
   };
 };
+
+export type SubmitIssueQueryVariables = {
+  id: string;
+  body: string;
+};
+
+export function submitIssue(
+  variables: SubmitIssueQueryVariables,
+): Promise<SubmitIssueQueryResponse> {
+  return gqlClient.request<SubmitIssueQueryResponse>(SUBMIT_ISSUE, variables);
+}

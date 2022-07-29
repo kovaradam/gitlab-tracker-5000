@@ -5,21 +5,14 @@ import { getTimeValuesFromMillis } from '../../utils/time';
 import { FormStyle } from '../../style/form';
 import { IssueCard, Props as IssueCardProps } from './IssueCard';
 import { SearchInput, SearchResult } from './SearchInput';
-import { useQuery } from '../../store/use-query';
-import {
-  GetProjectsQueryResponse,
-  GET_PROJECTS,
-  Issue,
-  SubmitIssueQueryResponse,
-  SUBMIT_ISSUE,
-} from './queries';
+import { useGqlQuery } from '../../store/use-query';
+import { GetProjectsQueryResponse, GET_PROJECTS, Issue, submitIssue } from './queries';
 import { IssueCard as IssueCardType, useIssueCards } from './use-issue-cards';
 import { formatTitle } from '../../utils/issues';
 import { AnimatedValue } from '../AnimatedValue';
 import { createIssueNote } from './utils';
 import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
-import { useIssues } from '../Dashboard/use-issues';
 import { usePrompt } from 'utils/use-prompt';
 import { useKeyDown } from 'utils/use-key-down';
 
@@ -36,11 +29,10 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
 }) => {
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
   const issueInputRef = React.useRef<HTMLInputElement>(null);
-  const [fetchDashboardIssues] = useIssues();
-  const [fetchSearchIssues, { data, isLoading }] =
-    useQuery<GetProjectsQueryResponse>(GET_PROJECTS);
-
-  const [submitIssue] = useQuery<SubmitIssueQueryResponse>(SUBMIT_ISSUE);
+  const [searchValue, setSearchValue] = React.useState('');
+  const { data, isLoading } = useGqlQuery<GetProjectsQueryResponse>(GET_PROJECTS, {
+    queryKey: ['search', searchValue.length > 3 ? searchValue : ''],
+  });
 
   const issues = React.useMemo(
     () =>
@@ -72,11 +64,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
   const searchInputHandler: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
-    if (value.length < 3) {
-      return;
-    }
-    const variables = { search: value };
-    fetchSearchIssues(variables);
+    setSearchValue(value);
   };
 
   const createSearchResultClickHandler = (issue: Issue) => {

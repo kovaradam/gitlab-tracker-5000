@@ -6,7 +6,6 @@ import { Timer } from '../components/Timer';
 import { UserIcon } from '../components/UserIcon';
 import { useTimestamp } from '../store/use-timestamp';
 import { createStorage } from '../utils/storage';
-import { UserProvider } from '../store/use-user';
 import { MdOutlineAddTask } from 'react-icons/md';
 import { AddTimeDialog } from '../components/AddTimeDialog';
 import { useToggle } from '../utils/use-toggle';
@@ -14,14 +13,13 @@ import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
-import { withIssues } from '../components/Dashboard/use-issues';
 import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
 
 const trackedTimeStorage = createStorage('tracked-time');
 
 const initLastTimestamp = trackedTimeStorage.get();
 
-export const Main = withIssues(() => {
+export function Main(): JSX.Element {
   const {
     timestamp,
     startTimer,
@@ -66,7 +64,7 @@ export const Main = withIssues(() => {
   const registerStartButtonInfo = useRegisterInfoBox('Start timer');
 
   return (
-    <UserProvider>
+    <>
       <S.Header>
         <S.AddTimeButton
           onClick={timeDialogToggle.on}
@@ -107,9 +105,9 @@ export const Main = withIssues(() => {
         )}
         <S.InfoBox />
       </S.Main>
-    </UserProvider>
+    </>
   );
-});
+}
 
 const S = {
   Header: styled.header`

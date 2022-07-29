@@ -17,9 +17,11 @@ export const App: React.FC<React.PropsWithChildren<unknown>> = () => {
       </S.Wrapper>
     );
   }
+
   if (!isLoggedIn) {
     return <Login />;
   }
+
   return (
     <QueryProvider>
       <Main />
