@@ -9,13 +9,11 @@ import { register } from './register-sw';
 
 ((): void => {
   const { location } = window;
-
   if (DEV || EXTENSION) {
     return;
   }
 
   if (location.protocol !== 'https:') {
-    document.body.innerHTML = '<h1>Redirecting to secure connection</h1>';
     location.replace(`https:${location.href.substring(location.protocol.length)}`);
   }
 })();
@@ -24,7 +22,7 @@ const rootElement = document.getElementById('root');
 
 invariant(rootElement, 'Did not find root element');
 
-if (EXTENSION && rootElement) {
+if (EXTENSION) {
   rootElement.style.width = '20rem';
   rootElement.style.height = '35rem';
 }
