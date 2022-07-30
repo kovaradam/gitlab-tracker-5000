@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Build and deploy
       - run: |
           cd ./client
           npm i
-          npm run serve -- --token ${{secrets.SURGE_TOKEN}}
+          npm run serve --token ${{secrets.SURGE_TOKEN}}
