@@ -10,6 +10,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 import { GraphQLClient } from 'graphql-request';
+import invariant from 'tiny-invariant';
 
 const GraphqlClientContext = React.createContext<GraphQLClient | null>(null);
 
@@ -39,10 +40,11 @@ export function useGqlQuery<DataType, VariablesType extends Variables = Variable
   options: { queryKey: QueryKey; variables?: VariablesType },
 ): UseQueryResult<DataType> {
   const graphqlClient = useGraphqlClient();
-  return useQuery(
-    options.queryKey,
-    async () => await graphqlClient?.request<DataType>(query, options?.variables),
-  );
+  return useQuery(options.queryKey, async () => {
+    invariant(graphqlClient, 'graphQl client has not been initialized');
+
+    return graphqlClient.request<DataType>(query, options?.variables);
+  });
 }
 
 export function useGqlMutation<DataType, VariablesType extends Variables>(
@@ -50,9 +52,8 @@ export function useGqlMutation<DataType, VariablesType extends Variables>(
 ): UseMutationResult<DataType, unknown, VariablesType> {
   const graphqlClient = useGraphqlClient();
   return useMutation<DataType, unknown, VariablesType>((variables) => {
-    if (!graphqlClient) {
-      throw Error('graphQl client has not been initialized');
-    }
+    invariant(graphqlClient, 'graphQl client has not been initialized');
+
     return graphqlClient.request<DataType>(query, variables);
   });
 }
@@ -72,9 +73,7 @@ export function useQueryWithCursor<Response, Variables extends PageVariables>(
   const graphqlClient = useGraphqlClient();
 
   const fetchQuery = (variables: Variables): Promise<Response> => {
-    if (!graphqlClient) {
-      throw Error('graphql client not available');
-    }
+    invariant(graphqlClient, 'graphQl client has not been initialized');
     return graphqlClient.request<Response>(query, variables);
   };
 
