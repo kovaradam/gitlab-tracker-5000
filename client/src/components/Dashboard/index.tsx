@@ -48,11 +48,14 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
   const projectIds =
     timelogsResult.data?.timelogs?.nodes
       ?.filter((timelog) => timelog.issue)
-      .map((timelog) => createGitlabProjectId(timelog.issue?.projectId ?? '')) ?? [];
+      .map((timelog) => createGitlabProjectId(timelog.issue?.projectId ?? ''))
+      // unique ids only
+      .filter((id, index, ids) => ids.indexOf(id) === index) ?? [];
 
   const projectsResult = useProjectsQuery({ ids: projectIds });
 
-  const isLoading = timelogsResult.isLoading || projectsResult.isLoading;
+  const isLoading =
+    timelogsResult.isLoading || projectsResult.isLoading || timelogsResult.isFetching;
 
   const [projectTimelogs, issueTimelogs, dayTimelogs] =
     React.useMemo((): Array<DataEntry>[] => {
