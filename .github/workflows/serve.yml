@@ -8,7 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: ls
-      - run: cd ./client
+      - run: |
+          cd ./client
+          ls
       - run: pwd
       - run: ls
       - run: npm i
