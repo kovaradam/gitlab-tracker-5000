@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: ls
-      - run: cd ${{ github.workspace }}/client
+      - run: cd client
       - run: pwd
       - run: ls
       - run: npm i
