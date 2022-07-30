@@ -1,5 +1,7 @@
 name: Serve static filles
-on: [push]
+on:
+  push:
+    branches: [main]
 
 jobs:
   Serve:
@@ -7,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
+      - name: Build and deploy
+        run: |
           cd ./client
           npm i
-          npm run serve --token ${{secrets.SURGE_TOKEN}}
+          npm run serve -- --token ${{secrets.SURGE_TOKEN}}
