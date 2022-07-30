@@ -10,8 +10,5 @@ jobs:
       - run: ls
       - run: |
           cd ./client
-          ls
-      - run: pwd
-      - run: ls
-      - run: npm i
-      - run: npm run serve
+          npm i
+          npm run serve
