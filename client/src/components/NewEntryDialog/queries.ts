@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request';
 import { useGraphqlClient } from 'store/use-graphql-query';
 
-export const GET_PROJECTS = gql`
+export const GET_SEARCH_ISSUES = gql`
   query getIssues($search: String) {
     projects(membership: true, sort: "updated_desc") {
       nodes {
@@ -19,7 +19,7 @@ export const GET_PROJECTS = gql`
   }
 `;
 
-export type GetProjectsQueryResponse = {
+export type GetSearchQueryResponse = {
   projects: {
     nodes: {
       name: string;
@@ -28,6 +28,10 @@ export type GetProjectsQueryResponse = {
       };
     }[];
   };
+};
+
+export type GetSearchVariables = {
+  search: string;
 };
 
 export type Issue = {

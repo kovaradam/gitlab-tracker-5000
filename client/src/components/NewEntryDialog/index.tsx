@@ -6,7 +6,13 @@ import { FormStyle } from '../../style/form';
 import { IssueCard, Props as IssueCardProps } from './IssueCard';
 import { SearchInput, SearchResult } from './SearchInput';
 import { useGqlQuery } from '../../store/use-graphql-query';
-import { GetProjectsQueryResponse, GET_PROJECTS, Issue, useSubmitIssue } from './queries';
+import {
+  GetSearchQueryResponse,
+  GetSearchVariables,
+  GET_SEARCH_ISSUES,
+  Issue,
+  useSubmitIssue,
+} from './queries';
 import { IssueCard as IssueCardType, useIssueCards } from './use-issue-cards';
 import { formatTitle } from '../../utils/issues';
 import { AnimatedValue } from '../AnimatedValue';
@@ -31,9 +37,13 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
   const issueInputRef = React.useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = React.useState('');
-  const { data, isLoading } = useGqlQuery<GetProjectsQueryResponse>(GET_PROJECTS, {
-    queryKey: ['search', searchValue.length > 3 ? searchValue : ''],
-  });
+  const { data, isLoading } = useGqlQuery<GetSearchQueryResponse, GetSearchVariables>(
+    GET_SEARCH_ISSUES,
+    {
+      queryKey: ['search', searchValue.length > 3 ? searchValue : ''],
+      variables: { search: searchValue },
+    },
+  );
 
   const issues = React.useMemo(
     () =>
