@@ -5,7 +5,10 @@ import { max } from './utils';
 
 const svgFraction = 10;
 
-export const LineChart: React.FC<React.PropsWithChildren<ChartProps>> = ({ data, ...props }) => {
+export const LineChart: React.FC<React.PropsWithChildren<ChartProps>> = ({
+  data,
+  ...props
+}) => {
   if (!data) {
     return null;
   }
@@ -36,10 +39,11 @@ export const LineChart: React.FC<React.PropsWithChildren<ChartProps>> = ({ data,
     title,
   }));
 
-  const dataLabels = points.map(({ left, top, value }) => ({
+  const dataLabels = points.map(({ left, top, value, title }) => ({
     left,
     top: 100 - top,
     title: formatValue(value),
+    description: `${title}: ${formatValue(value)}`,
   }));
 
   const mainColor = data[0]?.color || 'var(--chart-grey)';
@@ -62,11 +66,11 @@ export const LineChart: React.FC<React.PropsWithChildren<ChartProps>> = ({ data,
             {title}
           </S.AxisLabel>
         ))}
-        {dataLabels.map(({ left, top, title }) => (
+        {dataLabels.map(({ left, top, title, description }) => (
           <S.DataLabel
             style={{ left: `${left}%`, top: `${top}%`, color: mainColor }}
             key={`${left}${top}${title}`}
-            title={title}
+            title={description}
           >
             {title}
           </S.DataLabel>
