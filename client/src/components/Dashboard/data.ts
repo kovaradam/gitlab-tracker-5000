@@ -16,7 +16,7 @@ export function getProjectTimelogs(
       .map((project) => ({
         ...project,
         timelogs: timelogs.nodes.filter((timelog) => {
-          return project.id === createGitlabProjectId(timelog.issue.projectId);
+          return project.id === createGitlabProjectId(timelog.issue?.projectId ?? '');
         }),
       }))
 
@@ -32,7 +32,10 @@ export function getIssueTimelogs(data: GetTimelogsResponse): Array<DataEntry> {
   const issueMap = new Map<string, GetTimelogsResponse['timelogs']['nodes']>();
 
   data?.timelogs.nodes.forEach((timelog) => {
-    const issueId = timelog.issue.iid;
+    const issueId = timelog.issue?.id;
+    if (!issueId) {
+      return;
+    }
     const issueTimelogs = issueMap.get(issueId);
     issueMap.set(issueId, issueTimelogs?.concat(timelog) ?? [timelog]);
   });

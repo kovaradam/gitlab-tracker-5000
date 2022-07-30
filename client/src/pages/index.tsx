@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Spinner } from '../components/LoadingOverlay';
 import { Logo } from '../components/Logo';
 import { useLogin } from '../store/use-login';
-import { QueryProvider } from '../store/use-query';
+import { QueryProvider } from '../store/use-graphql-query';
 import { Login } from './Login';
 import { Main } from './Main';
 

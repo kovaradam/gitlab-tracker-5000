@@ -6,7 +6,7 @@ import {
   gitlabTokenStorage,
   serviceTokenStorage,
 } from '../config/storage';
-import { useGqlQuery } from '../store/use-query';
+import { useGqlQuery } from '../store/use-graphql-query';
 import { useClickOutsideRef } from '../utils/use-click-outside';
 import { useToggle } from '../utils/use-toggle';
 import { useRegisterInfoBox } from './InfoBox';

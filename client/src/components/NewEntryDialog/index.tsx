@@ -5,8 +5,8 @@ import { getTimeValuesFromMillis } from '../../utils/time';
 import { FormStyle } from '../../style/form';
 import { IssueCard, Props as IssueCardProps } from './IssueCard';
 import { SearchInput, SearchResult } from './SearchInput';
-import { queryClient, useGqlQuery } from '../../store/use-query';
-import { GetProjectsQueryResponse, GET_PROJECTS, Issue, submitIssue } from './queries';
+import { useGqlQuery } from '../../store/use-graphql-query';
+import { GetProjectsQueryResponse, GET_PROJECTS, Issue, useSubmitIssue } from './queries';
 import { IssueCard as IssueCardType, useIssueCards } from './use-issue-cards';
 import { formatTitle } from '../../utils/issues';
 import { AnimatedValue } from '../AnimatedValue';
@@ -15,6 +15,7 @@ import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
 import { usePrompt } from 'utils/use-prompt';
 import { useKeyDown } from 'utils/use-key-down';
+import { queryClient } from 'index';
 
 type Props = {
   discardEntry: (success?: boolean) => void;
@@ -43,6 +44,8 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
         .reduce((prev, current) => prev.concat(current), []),
     [data],
   );
+
+  const submitIssue = useSubmitIssue();
 
   const submit: React.FormEventHandler = (event): void => {
     event.preventDefault();

@@ -10,18 +10,10 @@ import { mediaQueries } from '../../style/media-queries';
 import { getTimeValuesFromMillis } from '../../utils/time';
 import { Spinner } from '../LoadingOverlay';
 import { getDayTimelogs, getIssueTimelogs, getProjectTimelogs } from './data';
-import {
-  GetProjectsResponse,
-  GetProjectsVariables,
-  GetTimelogsResponse,
-  GetTimelogsVariables,
-  GET_PROJECTS,
-  GET_TIMELOGS,
-} from './queries';
+import { useProjectsQuery, useTimelogsQuery } from './queries';
 import { createGitlabProjectId, dateToHtmlProp, formatTime } from './utils';
 import { ChartFactory } from './ChartFactory';
 import { useRegisterInfoBox } from '../InfoBox';
-import { useGqlQuery } from 'store/use-query';
 
 type Props = { className?: string };
 
@@ -51,26 +43,14 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
     endDate: to.toISOString(),
   };
 
-  const timelogsResult = useGqlQuery<GetTimelogsResponse, GetTimelogsVariables>(
-    GET_TIMELOGS,
-    {
-      variables: timelogVariables,
-      queryKey: ['dashboard', timelogVariables],
-    },
-  );
+  const timelogsResult = useTimelogsQuery(timelogVariables);
 
   const projectIds =
-    timelogsResult.data?.timelogs?.nodes?.map((timelog) =>
-      createGitlabProjectId(timelog.issue.projectId),
-    ) ?? [];
+    timelogsResult.data?.timelogs?.nodes
+      ?.filter((timelog) => timelog.issue)
+      .map((timelog) => createGitlabProjectId(timelog.issue?.projectId ?? '')) ?? [];
 
-  const projectsResult = useGqlQuery<GetProjectsResponse, GetProjectsVariables>(
-    GET_PROJECTS,
-    {
-      variables: { ids: projectIds },
-      queryKey: ['dashboard', ...projectIds],
-    },
-  );
+  const projectsResult = useProjectsQuery({ ids: projectIds });
 
   const isLoading = timelogsResult.isLoading || projectsResult.isLoading;
 

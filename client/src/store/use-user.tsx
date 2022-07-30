@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { useGqlQuery } from './use-query';
+import { useGqlQuery } from './use-graphql-query';
 
 type UserDetails = { username: string };
 

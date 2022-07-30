@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DEV, EXTENSION } from 'config';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -12,9 +13,13 @@ if (EXTENSION && rootElement) {
   rootElement.style.height = '35rem';
 }
 
+export const queryClient = new QueryClient();
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>,
   rootElement,
   () => {

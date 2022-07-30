@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import React from 'react';
 import styled from 'styled-components';
 import { Spinner } from '../components/LoadingOverlay';
@@ -16,12 +17,11 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
   const [errors, setErrors] = React.useState<
     Partial<Record<keyof typeof inputs, boolean>>
   >({});
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const inputRefs = [
-    React.useRef<HTMLInputElement>(null),
-    React.useRef<HTMLInputElement>(null),
-  ];
+  const loginMutation = useMutation((variables: { url: string; token: string }) =>
+    fetch(`${variables.url}/api/v4/user`, {
+      headers: createHeaders(variables.token),
+    }),
+  );
 
   const showErrors = (gitlabUrl: boolean, gitlabToken: boolean): void => {
     setErrors({ gitlabUrl, gitlabToken });
@@ -29,7 +29,11 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
 
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-    const [gitlabUrl, gitlabToken] = inputRefs.map(({ current }) => current?.value);
+    const formData = new FormData(event.target as HTMLFormElement);
+
+    const [gitlabUrl, gitlabToken] = ['url', 'token'].map(
+      (name) => formData.get(name) as string,
+    );
 
     if (!gitlabUrl || !gitlabToken) {
       showErrors(!gitlabUrl, !gitlabToken);
@@ -38,10 +42,10 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
 
     const validUrl = createValidUrl(gitlabUrl);
 
-    setIsLoading(true);
     try {
-      const response = await fetch(`${validUrl}/api/v4/user`, {
-        headers: createHeaders(gitlabToken),
+      const response = await loginMutation.mutateAsync({
+        url: validUrl,
+        token: gitlabToken,
       });
       if (!response.ok) {
         throw Error('unauthorized');
@@ -52,10 +56,9 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
       gitlabTokenStorage.set(gitlabToken);
       serviceTokenStorage.set(body.username);
       window.location.href = '';
-    } catch (error) {
+    } catch (_) {
       showErrors(true, true);
     }
-    setIsLoading(false);
   };
 
   const registerFieldset = (key: keyof typeof inputs): Record<string, unknown> => {
@@ -69,27 +72,31 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
     <S.Wrapper>
       <Logo />
       <S.Form onSubmit={onSubmit}>
-        <S.Fieldset {...registerFieldset('gitlabUrl')} disabled={isLoading}>
+        <S.Fieldset {...registerFieldset('gitlabUrl')} disabled={loginMutation.isLoading}>
           <S.Label htmlFor={inputs.gitlabUrl}>GitLab url</S.Label>
           <S.Input
             placeholder="gitlab.your-company.com"
             id={inputs.gitlabUrl}
+            name="url"
             required
-            ref={inputRefs[0]}
           />
         </S.Fieldset>
-        <S.Fieldset {...registerFieldset('gitlabToken')} disabled={isLoading}>
+        <S.Fieldset
+          {...registerFieldset('gitlabToken')}
+          disabled={loginMutation.isLoading}
+        >
           <S.Label htmlFor={inputs.gitlabToken}>GitLab token</S.Label>
           <S.Input
             placeholder="token"
             id={inputs.gitlabToken}
+            name="token"
             required
-            ref={inputRefs[1]}
             type="password"
           />
         </S.Fieldset>
-        <S.Submit>Submit</S.Submit>
-        {isLoading && <S.Spinner />}
+        <S.Submit disabled={loginMutation.isLoading}>
+          {loginMutation.isLoading ? <S.Spinner /> : 'Submit'}{' '}
+        </S.Submit>
       </S.Form>
     </S.Wrapper>
   );
@@ -105,10 +112,8 @@ const S = {
     gap: 1rem;
   `,
   Spinner: styled(Spinner)`
-    position: absolute;
-    color: var(--main-color);
-    top: 100%;
-    margin-top: 1rem;
+    color: white;
+    font-size: 1rem;
   `,
   Form: styled.form`
     position: relative;

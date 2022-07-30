@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { gqlClient } from 'store/use-query';
+import { useGraphqlClient } from 'store/use-graphql-query';
 
 export const GET_PROJECTS = gql`
   query getIssues($search: String) {
@@ -57,8 +57,14 @@ export type SubmitIssueQueryVariables = {
   body: string;
 };
 
-export function submitIssue(
+export function useSubmitIssue(): (
   variables: SubmitIssueQueryVariables,
-): Promise<SubmitIssueQueryResponse> {
-  return gqlClient.request<SubmitIssueQueryResponse>(SUBMIT_ISSUE, variables);
+) => Promise<SubmitIssueQueryResponse> {
+  const graphqlClient = useGraphqlClient();
+  return (variables) => {
+    if (!graphqlClient) {
+      throw Error('graphql client not provided');
+    }
+    return graphqlClient?.request<SubmitIssueQueryResponse>(SUBMIT_ISSUE, variables);
+  };
 }
