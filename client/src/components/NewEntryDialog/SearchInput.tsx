@@ -8,10 +8,7 @@ type Props = {
   children: ((inputValue: string) => React.ReactNode) | React.ReactNode;
   className?: string;
   isLoading?: boolean;
-  disabled?: boolean;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  id?: string;
-};
+} & React.HTMLProps<HTMLInputElement>;
 
 export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
   ({ isLoading, className, children, ...inputProps }, forwardedRef) => {
@@ -100,8 +97,9 @@ export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
     return (
       <S.Wrapper className={className}>
         <S.Input
-          ref={handleRefs(forwardedRef, inputRef)}
           {...inputProps}
+          as="input"
+          ref={handleRefs(forwardedRef, inputRef)}
           onChange={debounceOnChange}
           autoComplete="off"
         />

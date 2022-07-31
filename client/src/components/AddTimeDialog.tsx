@@ -9,24 +9,22 @@ type Props = {
   hide: () => void;
 };
 
-export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({ setTrackedTime, hide }) => {
-  const inputs = [
-    React.useRef<HTMLInputElement>(null),
-    React.useRef<HTMLInputElement>(null),
-  ];
-
+export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({
+  setTrackedTime,
+  hide,
+}) => {
   const submit: React.FormEventHandler = (event) => {
     event.preventDefault();
-    if (inputs.some(({ current }) => !current)) {
-      return;
-    }
-    const [hours, minutes] = inputs.map(({ current }) =>
-      Number.parseInt(current?.value || '0'),
+    const formData = new FormData(event.target as HTMLFormElement);
+
+    const [hours, minutes] = ['hours', 'minutes'].map((name) =>
+      Number.parseInt((formData.get(name) as string) || '0'),
     );
+
     const timeToAdd = (hours * 60 * 60 + minutes * 60) * 1000;
 
     if (timeToAdd <= 0) {
-      inputs[0].current?.focus();
+      (event.target as HTMLFormElement).querySelector('input')?.focus();
       return;
     }
 
@@ -34,24 +32,14 @@ export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({ setTra
     hide();
   };
 
-  const [hoursInput, minutesInput] = inputs;
-
-  React.useLayoutEffect(() => {
-    const element = hoursInput.current;
-    if (!element) {
-      return;
-    }
-    element.focus();
-  }, [hoursInput]);
-
   useKeyDown('Escape', hide);
 
   return (
     <S.Wrapper hide={hide}>
       <S.Form onSubmit={submit}>
         <S.Fieldset>
-          <S.Input type="number" placeholder="hours" ref={hoursInput} />
-          <S.Input type="number" placeholder="minutes" ref={minutesInput} />
+          <S.Input type="number" placeholder="hours" name="hours" min={0} autoFocus />
+          <S.Input type="number" placeholder="minutes" name="minutes" min={0} />
         </S.Fieldset>
         <S.Submit>Add time</S.Submit>
       </S.Form>

@@ -79,6 +79,8 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
             id={inputs.gitlabUrl}
             name="url"
             required
+            autoFocus
+            type="url"
           />
         </S.Fieldset>
         <S.Fieldset

@@ -129,14 +129,6 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
     }
   });
 
-  React.useLayoutEffect(() => {
-    const element = issueInputRef.current;
-    if (!element) {
-      return;
-    }
-    element.focus();
-  }, []);
-
   const timeValues = getTimeValuesFromMillis(timeLeft);
 
   const issueInputId = 'issue-input';
@@ -168,12 +160,13 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
           </S.InfoList>
         </section>
         <S.Fieldset>
-          <S.Label>Issue:</S.Label>
+          <S.Label htmlFor={issueInputId}>Issue:</S.Label>
           <S.SearchInput
             onChange={searchInputHandler}
             disabled={timeLeft === 0}
             ref={issueInputRef}
             id={issueInputId}
+            autoFocus
           >
             {isLoading ? (
               <S.SearchResultPlaceholder data-loading>Loading</S.SearchResultPlaceholder>
