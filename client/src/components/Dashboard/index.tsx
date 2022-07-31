@@ -114,40 +114,48 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
           {...useRegisterInfoBox(timeInputInfo)}
         />
       </S.TimeRangeInputWrapper>
-      <S.ChartWrapper>
-        <S.PieChart
-          data={projectTimelogs ?? placeholderData}
-          label={renderPieLabel}
-          animate
-          info="Total time spent on project"
-        />
-
-        <S.BarChart
-          data={issueTimelogs ?? placeholderData}
-          info="Total time spent on particular issue"
-        />
-        <S.LineChart
-          data={dayTimelogs ?? placeholderData}
-          info="Time spent on given day"
-        />
-        {showOverlay && (
-          <S.ChartOverlay>
-            {!isLoading && projectTimelogs?.length === 0 ? (
-              <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
-            ) : (
-              <Spinner />
-            )}
-          </S.ChartOverlay>
-        )}
-        <S.RefreshButton
-          disabled={isLoading}
-          onClick={(): void => {
+      <S.ChartSection
+        onScroll={(event): void => {
+          if (event.currentTarget?.scrollTop < -60) {
             timelogsResult.refetch();
-          }}
-        >
-          Refresh
-        </S.RefreshButton>
-      </S.ChartWrapper>
+          }
+        }}
+      >
+        <S.ChartWrapper>
+          <S.PieChart
+            data={projectTimelogs ?? placeholderData}
+            label={renderPieLabel}
+            animate
+            info="Total time spent on project"
+          />
+
+          <S.BarChart
+            data={issueTimelogs ?? placeholderData}
+            info="Total time spent on particular issue"
+          />
+          <S.LineChart
+            data={dayTimelogs ?? placeholderData}
+            info="Time spent on given day"
+          />
+          {showOverlay && (
+            <S.ChartOverlay>
+              {!isLoading && projectTimelogs?.length === 0 ? (
+                <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
+              ) : (
+                <Spinner />
+              )}
+            </S.ChartOverlay>
+          )}
+          <S.RefreshButton
+            disabled={isLoading}
+            onClick={(): void => {
+              timelogsResult.refetch();
+            }}
+          >
+            Refresh
+          </S.RefreshButton>
+        </S.ChartWrapper>
+      </S.ChartSection>
     </S.Wrapper>
   );
 };
@@ -200,11 +208,15 @@ const S = {
     border-color: var(--main-color);
     background-color: white;
   `,
-  ChartWrapper: styled.section`
+  ChartSection: styled.section`
     grid-area: 2 / 1 / 3 / 4;
+    overflow: auto;
+    position: relative;
+  `,
+  ChartWrapper: styled.div`
+    height: 100%;
     display: grid;
     gap: 5rem;
-    overflow: auto;
 
     @media ${mediaQueries.desktop} {
       display: grid;

@@ -13,17 +13,21 @@ export function getProjectTimelogs(
 ): DataEntry[] {
   return (
     projects.nodes
-      .map((project) => ({
-        ...project,
-        timelogs: timelogs.nodes.filter((timelog) => {
+      .map((project) => {
+        const projectTimelogs = timelogs.nodes.filter((timelog) => {
           return project.id === createGitlabProjectId(timelog.issue?.projectId ?? '');
-        }),
-      }))
-
+        });
+        const totalTimeSpent = getTotalTimeSpent(projectTimelogs);
+        return {
+          ...project,
+          totalTimeSpent,
+        };
+      })
+      .filter((project) => project.totalTimeSpent !== 0)
       .map((project, index) => ({
         title: project.name,
         color: colors[index % colors.length],
-        value: getTotalTimeSpent(project.timelogs),
+        value: project.totalTimeSpent,
       })) ?? []
   );
 }
@@ -48,10 +52,16 @@ export function getIssueTimelogs(data: GetTimelogsResponse): Array<DataEntry> {
       return;
     }
 
+    const totalTimeSpent = getTotalTimeSpent(timelogs);
+
+    if (totalTimeSpent === 0) {
+      return;
+    }
+
     entries.push({
       title: formatTitle(issue),
       url: issue.webUrl,
-      value: getTotalTimeSpent(timelogs),
+      value: totalTimeSpent,
       color: colors[index++ % colors.length],
     });
   });

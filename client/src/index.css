@@ -8,6 +8,7 @@
   --shadow-offset: 2px;
   --base-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 grey;
   --desktop-padding: 3rem;
+  --border-radius: 3px;
 }
 
 body {
@@ -39,6 +40,10 @@ button {
   transition: all 100ms;
   box-shadow: var(--base-shadow);
   cursor: pointer;
+}
+
+input {
+  border-radius: var(--border-radius);
 }
 
 a {

@@ -33,10 +33,6 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
     seconds: React.useRef(null),
   };
 
-  React.useEffect(() => {
-    timeInputRefs.hours.current?.focus();
-  }, [timeInputRefs.hours]);
-
   const updateTime = (): void => {
     function getValue(input: React.RefObject<HTMLInputElement>): number {
       const value = input.current?.value;
@@ -53,8 +49,8 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
     updateCard({ ...card, time: newTime });
   };
 
-  const updateDescription = (): void => {
-    const description = descriptionInput.current?.value ?? '';
+  const updateDescription: React.ChangeEventHandler<HTMLTextAreaElement> = (event) => {
+    const description = event.target?.value ?? '';
     updateCard({ ...card, description });
   };
 
@@ -72,10 +68,11 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
         </a>
       </S.Title>
       <S.IssueCardTimeInputWrapper>
-        {Object.entries(trackedTimeValues).map(([key, value]) => (
+        {Object.entries(trackedTimeValues).map(([key, value], index) => (
           <S.IssueCardTimeInput key={key}>
             <S.Label htmlFor={key}>{key}</S.Label>
             <S.Input
+              autoFocus={index === 0}
               id={key}
               type="number"
               max={timeLeftValues[key as keyof typeof timeLeftValues] + value}
@@ -89,7 +86,7 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
       </S.IssueCardTimeInputWrapper>
       <S.Fieldset>
         <S.Label>Description</S.Label>
-        <S.Input onBlur={updateDescription} as="textarea" ref={descriptionInput} />
+        <S.Input onChange={updateDescription} as="textarea" ref={descriptionInput} />
       </S.Fieldset>
     </S.Wrapper>
   );

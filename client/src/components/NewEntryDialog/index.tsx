@@ -103,6 +103,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
       if (event.key !== 'Enter') {
         return;
       }
+      event.preventDefault();
       clickHandler();
     };
   };

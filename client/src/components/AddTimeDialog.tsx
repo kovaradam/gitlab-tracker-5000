@@ -1,4 +1,5 @@
 import React from 'react';
+import { mediaQueries } from 'style/media-queries';
 import styled from 'styled-components';
 import { useKeyDown } from 'utils/use-key-down';
 import { FormStyle } from '../style/form';
@@ -38,8 +39,14 @@ export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({
     <S.Wrapper hide={hide}>
       <S.Form onSubmit={submit}>
         <S.Fieldset>
-          <S.Input type="number" placeholder="hours" name="hours" min={0} autoFocus />
-          <S.Input type="number" placeholder="minutes" name="minutes" min={0} />
+          <label>
+            Hours
+            <S.Input type="number" placeholder="0" name="hours" min={0} autoFocus />
+          </label>
+          <label>
+            Minutes
+            <S.Input type="number" placeholder="0" name="minutes" min={0} />
+          </label>
         </S.Fieldset>
         <S.Submit>Add time</S.Submit>
       </S.Form>
@@ -57,16 +64,31 @@ const S = {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
   `,
   Fieldset: styled(FormStyle.Fieldset)`
     display: flex;
-    justify-content: space-between;
-    flex-direction: row;
+    flex-direction: column;
+    width: 90%;
+    gap: 1rem;
+
+    @media ${mediaQueries.desktop} {
+      flex-direction: row;
+      gap: 5%;
+    }
+
+    & > label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      @media ${mediaQueries.desktop} {
+        width: 30%;
+      }
+    }
   `,
   Input: styled(FormStyle.Input)`
     border-color: var(--main-color);
-    width: 40%;
   `,
   Submit: styled(FormStyle.Submit)`
     width: 50%;

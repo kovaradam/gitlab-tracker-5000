@@ -99,6 +99,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, Props>(
         <S.Input
           {...inputProps}
           as="input"
+          type="search"
           ref={handleRefs(forwardedRef, inputRef)}
           onChange={debounceOnChange}
           autoComplete="off"
