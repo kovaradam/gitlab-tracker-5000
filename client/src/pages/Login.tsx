@@ -80,7 +80,6 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
             name="url"
             required
             autoFocus
-            type="url"
           />
         </S.Fieldset>
         <S.Fieldset
