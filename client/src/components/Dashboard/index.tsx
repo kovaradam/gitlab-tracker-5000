@@ -44,9 +44,9 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
   };
 
   const timelogsResult = useTimelogsQuery(timelogVariables);
-
+  const timelogs = timelogsResult.data?.timelogs?.nodes;
   const projectIds =
-    timelogsResult.data?.timelogs?.nodes
+    timelogs
       ?.filter((timelog) => timelog.issue)
       .map((timelog) => createGitlabProjectId(timelog.issue?.projectId ?? ''))
       // unique ids only
@@ -55,7 +55,7 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
   const projectsResult = useProjectsQuery({ ids: projectIds });
 
   const isLoading =
-    timelogsResult.isLoading || projectsResult.isLoading || timelogsResult.isFetching;
+    timelogsResult.isLoading || projectsResult.isLoading || timelogsResult.isRefetching;
 
   const [projectTimelogs, issueTimelogs, dayTimelogs] =
     React.useMemo((): Array<DataEntry>[] => {
@@ -80,8 +80,7 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
   };
 
   const [fromInputId, toInputId] = ['from-input', 'to-input'];
-  const showOverlay =
-    isLoading || !userDetails || timelogsResult.data?.timelogs?.nodes.length === 0;
+  const showOverlay = isLoading || !userDetails || timelogs?.length === 0;
 
   const timeInputInfo = 'Update filter';
 
@@ -116,6 +115,9 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
       </S.TimeRangeInputWrapper>
       <S.ChartSection
         onScroll={(event): void => {
+          if (isLoading) {
+            return;
+          }
           if (event.currentTarget?.scrollTop < -60) {
             timelogsResult.refetch();
           }
@@ -123,29 +125,20 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
       >
         <S.ChartWrapper>
           <S.PieChart
-            data={projectTimelogs ?? placeholderData}
+            data={!isLoading ? projectTimelogs : placeholderData}
             label={renderPieLabel}
             animate
             info="Total time spent on project"
           />
 
           <S.BarChart
-            data={issueTimelogs ?? placeholderData}
+            data={!isLoading ? issueTimelogs : placeholderData}
             info="Total time spent on particular issue"
           />
           <S.LineChart
-            data={dayTimelogs ?? placeholderData}
+            data={!isLoading ? dayTimelogs : placeholderData}
             info="Time spent on given day"
           />
-          {showOverlay && (
-            <S.ChartOverlay>
-              {!isLoading && projectTimelogs?.length === 0 ? (
-                <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
-              ) : (
-                <Spinner />
-              )}
-            </S.ChartOverlay>
-          )}
           <S.RefreshButton
             disabled={isLoading}
             onClick={(): void => {
@@ -156,6 +149,15 @@ export const Dashboard: React.FC<React.PropsWithChildren<Props>> = ({ className 
           </S.RefreshButton>
         </S.ChartWrapper>
       </S.ChartSection>
+      {showOverlay && (
+        <S.ChartOverlay>
+          {!isLoading && projectTimelogs?.length === 0 ? (
+            <S.NoDataMessage htmlFor={fromInputId}>No data available</S.NoDataMessage>
+          ) : (
+            <Spinner />
+          )}
+        </S.ChartOverlay>
+      )}
     </S.Wrapper>
   );
 };

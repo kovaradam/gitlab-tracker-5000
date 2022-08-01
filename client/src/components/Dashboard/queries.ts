@@ -113,6 +113,7 @@ export function useTimelogsQuery(
       return merged;
     },
     queryKey: ['dashboard'],
+    refetchOnWindowFocus: false,
   });
 }
 

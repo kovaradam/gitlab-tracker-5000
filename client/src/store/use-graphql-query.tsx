@@ -68,6 +68,7 @@ export function useQueryWithCursor<Response, Variables extends PageVariables>(
     merge: (prev: Response, next: Response) => Response;
     getPageInfo: (response: Response) => PageInfo;
     queryKey: QueryKey;
+    refetchOnWindowFocus?: boolean;
   },
 ): UseQueryResult<Response> {
   const graphqlClient = useGraphqlClient();
@@ -94,5 +95,6 @@ export function useQueryWithCursor<Response, Variables extends PageVariables>(
         }
         return response;
       }),
+    { refetchOnWindowFocus: options.refetchOnWindowFocus },
   );
 }
