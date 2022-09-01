@@ -16,7 +16,7 @@ import {
 import { IssueCard as IssueCardType, useIssueCards } from './use-issue-cards';
 import { formatTitle } from '../../utils/issues';
 import { AnimatedValue } from '../AnimatedValue';
-import { createIssueNote } from './utils';
+import { createIssueNote, areValidErrors } from './utils';
 import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
 import { usePrompt } from 'utils/use-prompt';
@@ -62,8 +62,8 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
     const results = cards?.map(async (card) => {
       updateCard({ ...card, isLoading: true });
       const issueNote = createIssueNote(card);
-      return await submitIssue(issueNote).then((response) => {
-        if (response === null || response.createNote.errors.length > 1) {
+      return submitIssue(issueNote).then((response) => {
+        if (response === null || areValidErrors(response.createNote.errors)) {
           updateCard({ ...card, isError: true, isLoading: false });
           return;
         }
@@ -256,6 +256,7 @@ const S = {
   `,
 
   Fieldset: styled(FormStyle.Fieldset)`
+    z-index: 2;
     width: 100%;
   `,
   Label: styled(FormStyle.Label)`
@@ -264,7 +265,6 @@ const S = {
   Submit: styled(FormStyle.Submit)``,
   SearchInput: styled(SearchInput)`
     width: 100%;
-
     & input {
       width: 100%;
       box-sizing: border-box;

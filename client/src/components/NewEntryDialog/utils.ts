@@ -12,3 +12,19 @@ export function createIssueNote({ time, description, id }: IssueCard): {
 
   return { id, body };
 }
+
+export function areValidErrors(errors: string[]): boolean {
+  const ignoredMessages = ['Commands only Added', 'Commands only Subtracted'];
+  if (!errors.length) {
+    return false;
+  }
+  if (
+    errors.some((error) =>
+      ignoredMessages.some((ignoredMessage) => error.includes(ignoredMessage)),
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
