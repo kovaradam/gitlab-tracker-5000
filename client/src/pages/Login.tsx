@@ -51,7 +51,6 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
         throw Error('unauthorized');
       }
       const body = await response.json();
-
       gitlabUrlStorage.set(validUrl);
       gitlabTokenStorage.set(gitlabToken);
       serviceTokenStorage.set(body.username);
@@ -86,7 +85,16 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
           {...registerFieldset('gitlabToken')}
           disabled={loginMutation.isLoading}
         >
-          <S.Label htmlFor={inputs.gitlabToken}>GitLab token</S.Label>
+          <S.TokenLabelWrapper>
+            <S.Label htmlFor={inputs.gitlabToken}>GitLab token</S.Label>
+            <a
+              href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              How to get one?
+            </a>
+          </S.TokenLabelWrapper>
           <S.Input
             placeholder="token"
             id={inputs.gitlabToken}
@@ -125,13 +133,19 @@ const S = {
     gap: 2rem;
   `,
   Fieldset: styled(FormStyle.Fieldset)``,
+  TokenLabelWrapper: styled.div`
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  `,
   Label: styled(FormStyle.Label)``,
   Submit: styled(FormStyle.Submit)``,
   Input: styled(FormStyle.Input)``,
 };
 
 function createValidUrl(inputUrl: string): string {
-  const hasTrailingSlash = inputUrl[inputUrl.length - 1] === '/';
+  const hasTrailingSlash = inputUrl.endsWith('/');
   const urlWithPrefix = inputUrl.includes('http')
     ? inputUrl
     : 'https://'.concat(inputUrl);

@@ -19,7 +19,7 @@ export const FormStyle = {
     position: relative;
     font-size: 1rem;
 
-    *[data-error='true'] > & {
+    *[data-error='true'] & {
       color: red;
       &::after {
         content: '!';
