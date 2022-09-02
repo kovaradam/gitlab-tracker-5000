@@ -3,7 +3,7 @@
     "192": "logo192.png",
     "512": "logo512.png"
   },
-  "version": "0.1.3",
+  "version": "0.1.4",
   "manifest_version": 3,
   "action": {
     "default_icon": "logo-tr512.png",
