@@ -23,7 +23,6 @@ import { usePrompt } from 'utils/use-prompt';
 import { useKeyDown } from 'utils/use-key-down';
 import { queryClient } from 'index';
 import { useParams } from 'react-router-dom';
-import { trackedTimeStorage } from 'store/use-timestamp';
 
 type Props = {
   hide: () => void;
@@ -133,8 +132,6 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
       cards.map(({ time }) => time).reduce((prev, current) => prev + current, 0),
     [cards, trackedTime],
   );
-
-  trackedTimeStorage.set(String(timeLeft));
 
   const timeValues = getTimeValuesFromMillis(timeLeft);
 

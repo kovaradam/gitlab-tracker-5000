@@ -4,7 +4,7 @@ import { NewEntryDialog } from '../components/NewEntryDialog';
 import { Logo } from '../components/Logo';
 import { Timer } from '../components/Timer';
 import { UserIcon } from '../components/UserIcon';
-import { trackedTimeStorage, useTimestamp } from '../store/use-timestamp';
+import { useTimestamp } from '../store/use-timestamp';
 import { MdOutlineAddTask } from 'react-icons/md';
 import { AddTimeDialog } from '../components/AddTimeDialog';
 import { Dashboard } from '../components/Dashboard';
@@ -12,7 +12,7 @@ import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
 import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 
 export function Main(): JSX.Element {
   const timer = useTimestamp();
@@ -24,7 +24,7 @@ export function Main(): JSX.Element {
     }
     const trackedTime = new Date().getTime() - timer.timestamp;
     timer.stopTimer();
-    navigate(`/new/${trackedTime}`);
+    navigate(getNewEntryPath(trackedTime));
   };
 
   const handleStartButton = (): void => {
@@ -32,8 +32,6 @@ export function Main(): JSX.Element {
   };
 
   const registerStartButtonInfo = useRegisterInfoBox('Start timer');
-
-  const persistedTrackedTime = Number(trackedTimeStorage.get());
 
   return (
     <>
@@ -60,14 +58,6 @@ export function Main(): JSX.Element {
         <S.Dashboard />
         <Routes>
           <Route
-            index
-            element={
-              Boolean(persistedTrackedTime) && (
-                <Navigate to={getNewEntryPath(persistedTrackedTime)} />
-              )
-            }
-          />
-          <Route
             path="add"
             element={
               <AddTimeDialog
@@ -84,13 +74,14 @@ export function Main(): JSX.Element {
               <>
                 <NewEntryDialog
                   setTrackedTime={(newTrackedTime): void =>
-                    navigate(getNewEntryPath(newTrackedTime))
+                    navigate(getNewEntryPath(newTrackedTime), { replace: true })
                   }
                   hide={(): void => {
-                    trackedTimeStorage.delete();
                     navigate('/');
                   }}
-                  onSuccess={(): void => navigate('/success')}
+                  onSuccess={(): void => {
+                    navigate('/success', { replace: true });
+                  }}
                 />
               </>
             }
