@@ -6,7 +6,7 @@ import { FormStyle } from '../style/form';
 import { DialogModal } from './DialogModal';
 
 type Props = {
-  setTrackedTime: React.Dispatch<React.SetStateAction<number | null>>;
+  setTrackedTime: (trackedTime: number) => void;
   hide: () => void;
 };
 
@@ -30,7 +30,6 @@ export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({
     }
 
     setTrackedTime(timeToAdd);
-    hide();
   };
 
   useKeyDown('Escape', hide);

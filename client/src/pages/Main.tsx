@@ -1,112 +1,118 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { NewEntryDialog } from '../components/NewEntryDialog';
 import { Logo } from '../components/Logo';
 import { Timer } from '../components/Timer';
 import { UserIcon } from '../components/UserIcon';
-import { useTimestamp } from '../store/use-timestamp';
-import { createStorage } from '../utils/storage';
+import { trackedTimeStorage, useTimestamp } from '../store/use-timestamp';
 import { MdOutlineAddTask } from 'react-icons/md';
 import { AddTimeDialog } from '../components/AddTimeDialog';
-import { useToggle } from '../utils/use-toggle';
 import { Dashboard } from '../components/Dashboard';
 import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
 import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
-
-const trackedTimeStorage = createStorage('tracked-time');
-
-const initLastTimestamp = trackedTimeStorage.get();
+import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 export function Main(): JSX.Element {
-  const {
-    timestamp,
-    startTimer,
-    stopTimer,
-    isLoading: isTimestampLoading,
-  } = useTimestamp();
-  const [trackedTime, setTrackedTime] = React.useState<number | null>(
-    !!initLastTimestamp ? Number(initLastTimestamp) : null,
-  );
-
-  const [isAddTimeDialogVisible, timeDialogToggle] = useToggle(false);
-  const [isSuccessAlertVisible, successAlertToggle] = useToggle(false);
-
-  useEffect(() => {
-    if (trackedTime === null) {
-      trackedTimeStorage.delete();
-    } else {
-      trackedTimeStorage.set(String(trackedTime));
-    }
-  }, [trackedTime]);
+  const timer = useTimestamp();
+  const navigate = useNavigate();
 
   const handleStopButton = (): void => {
-    if (!timestamp) {
+    if (!timer.timestamp) {
       throw Error('Stopping timer without init timestamp');
     }
-    setTrackedTime(new Date().getTime() - timestamp);
-    stopTimer();
+    const trackedTime = new Date().getTime() - timer.timestamp;
+    timer.stopTimer();
+    navigate(`/new/${trackedTime}`);
   };
 
   const handleStartButton = (): void => {
-    setTrackedTime(null);
-    startTimer();
+    timer.startTimer();
   };
-
-  const discardEntry = (success = false): void => {
-    setTrackedTime(null);
-    successAlertToggle.set(success);
-  };
-
-  const isEntryDialogVisible = trackedTime !== null;
 
   const registerStartButtonInfo = useRegisterInfoBox('Start timer');
+
+  const persistedTrackedTime = Number(trackedTimeStorage.get());
 
   return (
     <>
       <S.Header>
-        <S.AddTimeButton
-          onClick={timeDialogToggle.on}
-          {...useRegisterInfoBox('Add timelog')}
-        >
+        <S.AddTimeButton to="add" {...useRegisterInfoBox('Add timelog')}>
           <MdOutlineAddTask />
         </S.AddTimeButton>
         <S.Logo />
         <S.UserIcon />
       </S.Header>
       <S.Main>
-        <S.Timer timestamp={timestamp} stopTimer={handleStopButton} />
-        {timestamp === null && (
+        <S.Timer timestamp={timer.timestamp} stopTimer={handleStopButton} />
+        {timer.timestamp === null && (
           <S.StartTimerButton
             onClick={handleStartButton}
-            data-loading={isTimestampLoading}
-            disabled={isTimestampLoading}
+            data-loading={timer.isLoading}
+            disabled={timer.isLoading}
             {...registerStartButtonInfo}
           >
             <span>Start</span>
           </S.StartTimerButton>
         )}
-        {isEntryDialogVisible && (
-          <NewEntryDialog
-            trackedTime={trackedTime}
-            setTrackedTime={setTrackedTime}
-            discardEntry={discardEntry}
-          />
-        )}
+
         <S.Dashboard />
-        {isAddTimeDialogVisible && (
-          <AddTimeDialog hide={timeDialogToggle.off} setTrackedTime={setTrackedTime} />
-        )}
-        {isSuccessAlertVisible && (
-          <S.SuccessAlert hide={successAlertToggle.off}>
-            Timelogs successfully submitted!
-          </S.SuccessAlert>
-        )}
+        <Routes>
+          <Route
+            index
+            element={
+              Boolean(persistedTrackedTime) && (
+                <Navigate to={getNewEntryPath(persistedTrackedTime)} />
+              )
+            }
+          />
+          <Route
+            path="add"
+            element={
+              <AddTimeDialog
+                hide={(): void => navigate('/')}
+                setTrackedTime={(newTrackedTime): void =>
+                  navigate(getNewEntryPath(newTrackedTime ?? 0))
+                }
+              />
+            }
+          />
+          <Route
+            path="new/:trackedTime"
+            element={
+              <>
+                <NewEntryDialog
+                  setTrackedTime={(newTrackedTime): void =>
+                    navigate(getNewEntryPath(newTrackedTime))
+                  }
+                  hide={(): void => {
+                    trackedTimeStorage.delete();
+                    navigate('/');
+                  }}
+                  onSuccess={(): void => navigate('/success')}
+                />
+              </>
+            }
+          />
+          <Route
+            path="success"
+            element={
+              <S.SuccessAlert hide={(): void => navigate('/', { replace: true })}>
+                Timelogs successfully submitted!
+              </S.SuccessAlert>
+            }
+          />
+        </Routes>
+
         <S.InfoBox />
       </S.Main>
     </>
   );
+}
+
+function getNewEntryPath(trackedTime: number): string {
+  return `/new/${trackedTime}`;
 }
 
 const S = {
@@ -120,7 +126,8 @@ const S = {
     align-items: center;
     box-shadow: var(--baseShadow);
 
-    & > button {
+    & > button,
+    & > a {
       border-radius: 3px;
       --size: 2.5rem;
       width: var(--size);
@@ -134,16 +141,24 @@ const S = {
       font-size: 1.2rem;
     }
   `,
-  AddTimeButton: styled.button`
-    font-size: 2rem;
+  AddTimeButton: styled(Link)`
+    border: none;
+    transition: all 100ms;
+    box-shadow: var(--base-shadow);
+
+    font-size: 1.5rem;
     background-color: white;
     color: var(--main-color);
     border: 1px dashed var(--main-color);
-    padding: 0 0.5rem;
     border-radius: 2px;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &:active {
+      box-shadow: none;
+      transform: translate(var(--shadow-offset), var(--shadow-offset));
+    }
 
     @media ${mediaQueries.desktop} {
       position: absolute;

@@ -57,3 +57,7 @@ export function useIssueCards(): {
     [addCard, removeCard, updateCard, cards],
   );
 }
+
+useIssueCards.getCardSum = (cards: IssueCard[]): number => {
+  return cards.map((card) => card.time).reduce((prev, current) => prev + current, 0);
+};

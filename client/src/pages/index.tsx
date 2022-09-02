@@ -2,14 +2,18 @@ import styled from 'styled-components';
 import { Spinner } from '../components/LoadingOverlay';
 import { Logo } from '../components/Logo';
 import { useLogin } from '../store/use-login';
-import { QueryProvider } from '../store/use-graphql-query';
+import { GraphQlQueryProvider } from '../store/use-graphql-query';
 import { Login } from './Login';
 import { Main } from './Main';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+
+const loginPath = '/login';
 
 export const App: React.FC<React.PropsWithChildren<unknown>> = () => {
-  const { isLoading, isLoggedIn } = useLogin();
+  const login = useLogin();
+  const location = useLocation();
 
-  if (isLoading) {
+  if (login.isLoading) {
     return (
       <S.Wrapper>
         <Logo />
@@ -18,14 +22,25 @@ export const App: React.FC<React.PropsWithChildren<unknown>> = () => {
     );
   }
 
-  if (!isLoggedIn) {
-    return <Login />;
+  if (!login.isLoggedIn && location.pathname !== loginPath) {
+    return <Navigate to={loginPath} replace />;
   }
 
   return (
-    <QueryProvider>
-      <Main />
-    </QueryProvider>
+    <Routes>
+      <Route
+        path="*"
+        element={
+          <GraphQlQueryProvider>
+            <Main />
+          </GraphQlQueryProvider>
+        }
+      />
+      <Route
+        path={loginPath}
+        element={<>{login.isLoggedIn ? <Navigate to="/" /> : <Login />}</>}
+      />
+    </Routes>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createStorage } from 'utils/storage';
 import { createHeaders } from '../config/api';
 import { serviceTokenStorage } from '../config/storage';
 import { useFetch } from '../utils/use-fetch';
@@ -34,3 +35,5 @@ export function useTimestamp(): {
     [timestamp, stopTimer, startTimer, isLoading],
   );
 }
+
+export const trackedTimeStorage = createStorage('tracked-time');

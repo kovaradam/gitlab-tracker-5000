@@ -14,7 +14,7 @@ import invariant from 'tiny-invariant';
 
 const GraphqlClientContext = React.createContext<GraphQLClient | null>(null);
 
-export function QueryProvider(props: { children: React.ReactNode }): JSX.Element {
+export function GraphQlQueryProvider(props: { children: React.ReactNode }): JSX.Element {
   const graphqlClient = React.useMemo(() => {
     const [endpoint, token] = [gitlabUrlStorage.get(), gitlabTokenStorage.get()];
 

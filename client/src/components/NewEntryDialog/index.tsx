@@ -22,19 +22,22 @@ import { dots } from '../../style/animation';
 import { usePrompt } from 'utils/use-prompt';
 import { useKeyDown } from 'utils/use-key-down';
 import { queryClient } from 'index';
+import { useParams } from 'react-router-dom';
+import { trackedTimeStorage } from 'store/use-timestamp';
 
 type Props = {
-  discardEntry: (success?: boolean) => void;
-  trackedTime: number;
-  setTrackedTime: React.Dispatch<React.SetStateAction<number | null>>;
+  hide: () => void;
+  onSuccess: () => void;
+  setTrackedTime: (trackedTime: number) => void;
 };
 
 export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
-  discardEntry,
+  hide,
+  onSuccess,
   setTrackedTime,
-  trackedTime,
 }) => {
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
+  const trackedTime = Number(useParams().trackedTime ?? 0);
   const issueInputRef = React.useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = React.useState('');
   const { data, isLoading } = useGqlQuery<GetSearchQueryResponse, GetSearchVariables>(
@@ -59,6 +62,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
 
   const submit: React.FormEventHandler = (event): void => {
     event.preventDefault();
+    const submitSum = useIssueCards.getCardSum(cards ?? []);
     const results = cards?.map(async (card) => {
       updateCard({ ...card, isLoading: true });
       const issueNote = createIssueNote(card);
@@ -68,13 +72,19 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
           return;
         }
         removeCard(card.cardId);
-        setTrackedTime((prev) => (prev ?? 0) - card.time);
+        setTrackedTime(trackedTime - card.time);
       });
     });
+
     Promise.all(results)
       .then(() => {
         queryClient.invalidateQueries();
         queryClient.refetchQueries(['dashboard']);
+      })
+      .then(() => {
+        if (trackedTime - submitSum <= 0) {
+          onSuccess();
+        }
       })
       .catch(() => {
         queryClient.invalidateQueries();
@@ -124,11 +134,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
     [cards, trackedTime],
   );
 
-  React.useLayoutEffect(() => {
-    if (trackedTime <= 0) {
-      discardEntry(true);
-    }
-  });
+  trackedTimeStorage.set(String(timeLeft));
 
   const timeValues = getTimeValuesFromMillis(timeLeft);
 
@@ -137,7 +143,10 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
   const { showPrompt, Prompt } = usePrompt();
 
   const handleCloseAction = (): void => {
-    showPrompt(discardEntry);
+    if (trackedTime <= 0) {
+      hide();
+    }
+    showPrompt(hide);
   };
 
   useKeyDown('Escape', handleCloseAction);

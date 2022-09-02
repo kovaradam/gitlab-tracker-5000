@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DEV, EXTENSION } from 'config';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 import './index.css';
 import { App } from './pages';
@@ -29,12 +30,14 @@ if (EXTENSION) {
 
 export const queryClient = new QueryClient();
 
-const root = createRoot(rootElement as HTMLElement);
+const root = createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,
 );
