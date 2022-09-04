@@ -12,7 +12,7 @@ import { DialogModal } from '../components/DialogModal';
 import { dots } from '../style/animation';
 import { mediaQueries } from '../style/media-queries';
 import { InfoBox, useRegisterInfoBox } from '../components/InfoBox';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 export function Main(): JSX.Element {
   const timer = useTimestamp();
@@ -36,7 +36,10 @@ export function Main(): JSX.Element {
   return (
     <>
       <S.Header>
-        <S.AddTimeButton to="add" {...useRegisterInfoBox('Add timelog')}>
+        <S.AddTimeButton
+          onClick={(): void => navigate('add')}
+          {...useRegisterInfoBox('Add timelog')}
+        >
           <MdOutlineAddTask />
         </S.AddTimeButton>
         <S.Logo />
@@ -132,11 +135,7 @@ const S = {
       font-size: 1.2rem;
     }
   `,
-  AddTimeButton: styled(Link)`
-    border: none;
-    transition: all 100ms;
-    box-shadow: var(--base-shadow);
-
+  AddTimeButton: styled.button`
     font-size: 1.5rem;
     background-color: white;
     color: var(--main-color);
@@ -145,11 +144,6 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    &:active {
-      box-shadow: none;
-      transform: translate(var(--shadow-offset), var(--shadow-offset));
-    }
 
     @media ${mediaQueries.desktop} {
       position: absolute;
