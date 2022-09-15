@@ -29,6 +29,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:extension": "scripts/build-extension.sh",
+    "extension:bump-up": "sh scripts/bump-and-commit.sh",
     "test": "react-scripts test",
     "server": "cd ../server && vr start",
     "dev": "npm start & npm run server",
