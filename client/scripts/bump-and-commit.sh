@@ -9,4 +9,4 @@ npx prettier --write $MANIFEST_PATH
 
 git add $MANIFEST_PATH && 
 
-git commit -m "bump up $MANIFEST_PATH extension version"
+git commit -m "bump up $UPDATE_TYPE extension version"
