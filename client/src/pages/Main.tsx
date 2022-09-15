@@ -73,9 +73,6 @@ export function Main(): JSX.Element {
             element={
               <>
                 <NewEntryDialog
-                  setTrackedTime={(newTrackedTime): void =>
-                    navigate(getNewEntryPath(newTrackedTime), { replace: true })
-                  }
                   hide={(): void => {
                     navigate('/');
                   }}

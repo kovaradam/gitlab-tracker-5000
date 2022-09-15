@@ -27,16 +27,13 @@ import { useParams } from 'react-router-dom';
 type Props = {
   hide: () => void;
   onSuccess: () => void;
-  setTrackedTime: (trackedTime: number) => void;
 };
 
-export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
-  hide,
-  onSuccess,
-  setTrackedTime,
-}) => {
+export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = (props) => {
   const { cards, addCard, updateCard, removeCard } = useIssueCards();
-  const trackedTime = Number(useParams().trackedTime ?? 0);
+  const [trackedTime, setTrackedTime] = React.useState(
+    Number(useParams().trackedTime ?? 0),
+  );
   const issueInputRef = React.useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = React.useState('');
   const { data, isLoading } = useGqlQuery<GetSearchQueryResponse, GetSearchVariables>(
@@ -70,8 +67,8 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
           updateCard({ ...card, isError: true, isLoading: false });
           return;
         }
+        setTrackedTime((prev) => prev - card.time);
         removeCard(card.cardId);
-        setTrackedTime(trackedTime - card.time);
       });
     });
 
@@ -82,7 +79,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
       })
       .then(() => {
         if (trackedTime - submitSum <= 0) {
-          onSuccess();
+          props.onSuccess();
         }
       })
       .catch(() => {
@@ -141,9 +138,9 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = ({
 
   const handleCloseAction = (): void => {
     if (trackedTime <= 0) {
-      hide();
+      props.hide();
     }
-    showPrompt(hide);
+    showPrompt(props.hide);
   };
 
   useKeyDown('Escape', handleCloseAction);
