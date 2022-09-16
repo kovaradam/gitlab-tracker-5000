@@ -78,7 +78,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = (props) 
         queryClient.refetchQueries(['dashboard']);
       })
       .then(() => {
-        if (trackedTime - submitSum <= 0) {
+        if (trackedTime - submitSum <= 1000) {
           props.onSuccess();
         }
       })
@@ -150,7 +150,7 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = (props) 
       <S.CloseButton onClick={handleCloseAction}>
         <GrFormClose />
       </S.CloseButton>
-      <S.Header>New Entry</S.Header>
+      <S.Header>Add timelogs</S.Header>
       <S.Form>
         <section>
           <S.Label>Time to add:</S.Label>
