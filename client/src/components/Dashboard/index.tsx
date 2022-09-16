@@ -249,7 +249,10 @@ const S = {
       overflow-x: visible;
     }
   `,
-  LineChart: styled(ChartFactory).attrs({ formatValue: formatTime, type: 'line' })`
+  LineChart: styled(ChartFactory).attrs({
+    formatValue: (time) => formatTime(time * 1000),
+    type: 'line',
+  })`
     height: min-content;
     width: 90%;
     height: min-content;

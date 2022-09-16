@@ -117,8 +117,7 @@ const S = {
     align-items: center;
     box-shadow: var(--baseShadow);
 
-    & > button,
-    & > a {
+    & > button {
       border-radius: 3px;
       --size: 2.5rem;
       width: var(--size);
@@ -141,6 +140,10 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    & svg {
+      min-width: 2rem;
+    }
 
     @media ${mediaQueries.desktop} {
       position: absolute;

@@ -7,6 +7,8 @@ const colors = ['var(--main-color)', '#ff9a9a'];
 
 type DateRange = { from: Date; to: Date };
 
+const TIME_SPENT_THRESHOLD = 60;
+
 export function getProjectTimelogs(
   { projects }: GetProjectsResponse,
   { timelogs }: GetTimelogsResponse,
@@ -23,7 +25,7 @@ export function getProjectTimelogs(
           totalTimeSpent,
         };
       })
-      .filter((project) => project.totalTimeSpent !== 0)
+      .filter((project) => project.totalTimeSpent >= TIME_SPENT_THRESHOLD)
       .map((project, index) => ({
         title: project.name,
         color: colors[index % colors.length],
@@ -54,7 +56,7 @@ export function getIssueTimelogs(data: GetTimelogsResponse): Array<DataEntry> {
 
     const totalTimeSpent = getTotalTimeSpent(timelogs);
 
-    if (totalTimeSpent === 0) {
+    if (totalTimeSpent <= TIME_SPENT_THRESHOLD) {
       return;
     }
 
@@ -100,20 +102,15 @@ export function getDayTimelogs(
   });
 
   data?.timelogs.nodes
-    .map(
-      ({ spentAt, timeSpent }) => [new Date(spentAt), timeSpent * 1000] as [Date, number],
-    )
-    .filter(([, totalTimeSpent]) => totalTimeSpent !== 0)
+    .map(({ spentAt, timeSpent }) => [new Date(spentAt), timeSpent] as [Date, number])
+    .filter(([, timeSpent]) => timeSpent !== 0)
     .sort(([prev], [next]) => prev.getTime() - next.getTime())
-    .map(
-      ([date, totalTimeSpent]) =>
-        [dateFormatter(date), totalTimeSpent] as [string, number],
-    )
-    .forEach(([spentAt, totalTimeSpent]) => {
+    .map(([date, timeSpent]) => [dateFormatter(date), timeSpent] as [string, number])
+    .forEach(([spentAt, timeSpent]) => {
       if (!dateTimelogMap[spentAt]) {
         dateTimelogMap[spentAt] = 0;
       }
-      dateTimelogMap[spentAt] += totalTimeSpent;
+      dateTimelogMap[spentAt] += timeSpent;
     });
 
   return Object.entries(dateTimelogMap).map(([spentAt, totalTimeSpent]) => ({
