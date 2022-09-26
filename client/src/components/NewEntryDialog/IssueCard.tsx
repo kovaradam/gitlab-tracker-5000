@@ -72,7 +72,6 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
           <S.IssueCardTimeInput key={key}>
             <S.Label htmlFor={key}>{key}</S.Label>
             <S.Input
-              autoFocus={index === 0}
               id={key}
               type="number"
               max={timeLeftValues[key as keyof typeof timeLeftValues] + value}

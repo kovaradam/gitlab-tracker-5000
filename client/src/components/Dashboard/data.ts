@@ -1,4 +1,4 @@
-import { DataEntry } from 'react-minimal-pie-chart/types/commonTypes';
+import type { DataEntry } from 'react-minimal-pie-chart/types/commonTypes';
 import { formatTitle } from '../../utils/issues';
 import { GetProjectsResponse, GetTimelogsResponse } from './queries';
 import { createGitlabProjectId } from './utils';

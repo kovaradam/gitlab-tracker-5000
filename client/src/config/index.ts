@@ -1,2 +1,2 @@
-export const DEV = process.env.NODE_ENV !== 'production';
+export const DEV = !import.meta.env.PROD;
 export const EXTENSION = window.location.protocol === 'chrome-extension:';

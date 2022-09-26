@@ -38,11 +38,11 @@ export const AddTimeDialog: React.FC<React.PropsWithChildren<Props>> = ({
     <S.Wrapper hide={hide}>
       <S.Form onSubmit={submit}>
         <S.Fieldset>
-          <label>
+          <label htmlFor="hours">
             Hours
-            <S.Input type="number" placeholder="0" name="hours" min={0} autoFocus />
+            <S.Input type="number" placeholder="0" name="hours" min={0} />
           </label>
-          <label>
+          <label htmlFor="minutes">
             Minutes
             <S.Input type="number" placeholder="0" name="minutes" min={0} />
           </label>

@@ -21,7 +21,7 @@ import { DialogModal } from '../DialogModal';
 import { dots } from '../../style/animation';
 import { usePrompt } from 'utils/use-prompt';
 import { useKeyDown } from 'utils/use-key-down';
-import { queryClient } from 'index';
+import { queryClient } from 'main';
 import { useParams } from 'react-router-dom';
 
 type Props = {
@@ -170,7 +170,6 @@ export const NewEntryDialog: React.FC<React.PropsWithChildren<Props>> = (props) 
             disabled={timeLeft === 0}
             ref={issueInputRef}
             id={issueInputId}
-            autoFocus
           >
             {isLoading ? (
               <S.SearchResultPlaceholder data-loading>Loading</S.SearchResultPlaceholder>

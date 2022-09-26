@@ -31,7 +31,7 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
 
-    const [gitlabUrl, gitlabToken] = ['url', 'token'].map(
+    const [gitlabUrl, gitlabToken] = ['url', 'current-password'].map(
       (name) => formData.get(name) as string,
     );
 
@@ -78,7 +78,6 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
             id={inputs.gitlabUrl}
             name="url"
             required
-            autoFocus
           />
         </S.Fieldset>
         <S.Fieldset
@@ -98,7 +97,7 @@ export const Login: React.FC<React.PropsWithChildren<unknown>> = () => {
           <S.Input
             placeholder="token"
             id={inputs.gitlabToken}
-            name="token"
+            name="current-password"
             required
             type="password"
           />

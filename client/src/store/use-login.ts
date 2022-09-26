@@ -1,3 +1,4 @@
+import { SERVER_URL } from 'config/api';
 import React from 'react';
 import { gitlabTokenStorage } from '../config/storage';
 
@@ -9,7 +10,7 @@ export function useLogin(): { isLoggedIn: boolean; isLoading: boolean } {
     if (isLoggedIn) {
       return;
     }
-    const url = `${process.env.REACT_APP_SERVER_URL ?? ''}/api/timestamp`;
+    const url = `${SERVER_URL ?? ''}/api/timestamp`;
 
     fetch(url)
       .then(({ status }) => {

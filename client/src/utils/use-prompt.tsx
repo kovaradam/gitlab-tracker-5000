@@ -36,7 +36,7 @@ export function usePrompt(): {
       return (
         <S.Dialog>
           <S.Message>{children}</S.Message>
-          <S.Button tabIndex={0} onClick={withHide(handles.reject)} autoFocus>
+          <S.Button tabIndex={0} onClick={withHide(handles.reject)}>
             No
           </S.Button>
           <S.Button onClick={withHide(handles.accept)}>Yes</S.Button>

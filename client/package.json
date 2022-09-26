@@ -1,72 +1,81 @@
 {
-  "name": "gitlab-tracker-5000",
-  "version": "0.1.0",
+  "name": "test-vite",
   "private": true,
-  "homepage": ".",
-  "dependencies": {
-    "@tanstack/react-query": "^4.0.10",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^16.11.26",
-    "@types/react": "^18.0.5",
-    "@types/react-dom": "^18.0.1",
-    "@types/styled-components": "^5.1.15",
-    "graphql-request": "^3.6.1",
-    "prettier": "^2.4.1",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-hooks-global-state": "^1.0.2",
-    "react-icons": "^4.3.1",
-    "react-minimal-pie-chart": "^8.2.0",
-    "react-router-dom": "^6.4.0-pre.8",
-    "react-scripts": "5.0.0",
-    "styled-components": "^5.3.3",
-    "tiny-invariant": "^1.2.0",
-    "typescript": "^4.5.5",
-    "web-vitals": "^2.1.4"
-  },
-  "proxy": "http://localhost:3001",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "build:extension": "scripts/build-extension.sh",
     "extension:bump-up": "sh scripts/bump-and-commit.sh",
-    "test": "react-scripts test",
     "server": "cd ../server && vr start",
     "dev": "npm start & npm run server",
     "serve": "npm run build && npx surge ./build gitlab-tracker-5000.surge.sh"
   },
+  "dependencies": {
+    "@tanstack/react-query": "^4.6.1",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.31.8",
+    "graphql-request": "^5.0.0",
+    "prettier": "^2.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hooks-global-state": "^2.0.0",
+    "react-icons": "^4.4.0",
+    "react-minimal-pie-chart": "^8.3.0",
+    "react-router-dom": "^6.4.1",
+    "styled-components": "^5.3.5",
+    "tiny-invariant": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.1.0",
+    "eslint": "^8.24.0",
+    "eslint-config-react-app": "^7.0.1",
+    "surge": "^0.23.1",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.0",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-pwa": "^0.13.1",
+    "vite-tsconfig-paths": "^3.5.1"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "plugin:jsx-a11y/recommended",
+      "eslint-config-prettier"
     ],
-    "overrides": [
-      {
-        "files": [
-          "**/*.ts?(x)"
-        ],
-        "rules": {
-          "@typescript-eslint/no-redeclare": "off",
-          "@typescript-eslint/ban-types": "warn",
-          "@typescript-eslint/no-use-before-define": "off",
-          "@typescript-eslint/explicit-function-return-type": "warn"
+    "settings": {
+      "parser": "@typescript-eslint/parser",
+      "react": {
+        "version": "detect"
+      },
+      "import/resolver": {
+        "node": {
+          "paths": [
+            "src"
+          ],
+          "extensions": [
+            ".js",
+            ".jsx",
+            ".ts",
+            ".tsx"
+          ]
         }
       }
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "surge": "^0.23.1"
+    },
+    "rules": {
+      "@typescript-eslint/no-redeclare": "off",
+      "@typescript-eslint/ban-types": "warn",
+      "@typescript-eslint/no-use-before-define": "off",
+      "@typescript-eslint/explicit-function-return-type": "warn"
+    }
   }
 }

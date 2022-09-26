@@ -1,5 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 
+export const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 export function createHeaders(token: string): Headers {
   return new Headers({ authorization: `Bearer ${token}` });
 }

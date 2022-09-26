@@ -3,12 +3,12 @@ import React from 'react';
 import { createGraphQLClient } from '../config/api';
 import { gitlabUrlStorage, gitlabTokenStorage } from '../config/storage';
 import {
-  QueryKey,
   useMutation,
   UseMutationResult,
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
+import type { QueryKey } from '@tanstack/react-query';
 import { GraphQLClient } from 'graphql-request';
 import invariant from 'tiny-invariant';
 
@@ -81,7 +81,7 @@ export function useQueryWithCursor<Response, Variables extends PageVariables>(
   return useQuery(
     [options.queryKey, options.variables],
     async () =>
-      await fetchQuery(options.variables).then(async (response) => {
+      fetchQuery(options.variables).then(async (response) => {
         let pageInfo = options.getPageInfo(response);
         while (pageInfo.hasNextPage) {
           const { endCursor } = pageInfo;

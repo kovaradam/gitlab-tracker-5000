@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import invariant from 'tiny-invariant';
 import './index.css';
 import { App } from './pages';
-import { register } from './register-sw';
 
 ((): void => {
   const { location } = window;
@@ -41,5 +40,3 @@ root.render(
     </QueryClientProvider>
   </React.StrictMode>,
 );
-
-register();

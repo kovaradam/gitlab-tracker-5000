@@ -6,6 +6,7 @@ import { GraphQlQueryProvider } from '../store/use-graphql-query';
 import { Login } from './Login';
 import { Main } from './Main';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import React from 'react';
 
 const loginPath = '/login';
 

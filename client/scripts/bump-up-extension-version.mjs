@@ -8,12 +8,18 @@ let [major, minor, patch] = manifest.version.split('.').map(Number);
 
 if (updateType === 'major') {
   major++;
+  minor = 0;
+  patch = 0;
 } else if (updateType === 'minor') {
   minor++;
+  patch = 0;
 } else if (updateType === '-major') {
   major--;
+  minor = 0;
+  patch = 0;
 } else if (updateType === '-minor') {
   minor--;
+  patch = 0;
 } else if (updateType === '-patch') {
   patch--;
 } else {

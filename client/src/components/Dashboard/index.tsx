@@ -1,5 +1,5 @@
 import React from 'react';
-import {
+import type {
   DataEntry,
   LabelRenderFunction,
 } from 'react-minimal-pie-chart/types/commonTypes';

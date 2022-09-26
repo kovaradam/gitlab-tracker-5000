@@ -1,10 +1,10 @@
 import React from 'react';
 import { createStorage } from 'utils/storage';
-import { createHeaders } from '../config/api';
+import { createHeaders, SERVER_URL } from '../config/api';
 import { serviceTokenStorage } from '../config/storage';
 import { useFetch } from '../utils/use-fetch';
 
-const url = `${process.env.REACT_APP_SERVER_URL}/api/timestamp`;
+const url = `${SERVER_URL}/api/timestamp`;
 const headers = createHeaders(serviceTokenStorage.get() ?? '');
 
 export function useTimestamp(): {
