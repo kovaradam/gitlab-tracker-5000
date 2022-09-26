@@ -1,8 +1,0 @@
-{
-  "icons": { "192": "logo192.png", "512": "logo512.png" },
-  "version": "2.0.0",
-  "manifest_version": 3,
-  "action": { "default_icon": "logo-tr512.png", "default_popup": "index.html" },
-  "permissions": ["storage"],
-  "commands": { "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+G" } } }
-}
