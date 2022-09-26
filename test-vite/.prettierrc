@@ -1,0 +1,10 @@
+{
+  "semi": true,
+  "trailingComma": "all",
+  "printWidth": 90,
+  "endOfLine": "auto",
+  "tabWidth": 2,
+  "singleQuote": true,
+  "importOrder": ["(^react$)|(^react-dom$)", "(^(?!(^[./])).*)", "^[./]"],
+  "importOrderSeparation": true
+}
