@@ -38,23 +38,22 @@
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.1.0",
     "eslint": "^8.24.0",
+    "eslint-config-react-app": "^7.0.1",
     "surge": "^0.23.1",
     "typescript": "^4.6.4",
     "vite": "^3.1.0",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-pwa": "^0.13.1",
     "vite-tsconfig-paths": "^3.5.1"
   },
   "eslintConfig": {
     "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "plugin:import/recommended",
+      "react-app",
       "plugin:jsx-a11y/recommended",
-      "plugin:@typescript-eslint/recommended",
       "eslint-config-prettier"
     ],
-    "parser": "@typescript-eslint/parser",
     "settings": {
+      "parser": "@typescript-eslint/parser",
       "react": {
         "version": "detect"
       },
@@ -76,10 +75,7 @@
       "@typescript-eslint/no-redeclare": "off",
       "@typescript-eslint/ban-types": "warn",
       "@typescript-eslint/no-use-before-define": "off",
-      "@typescript-eslint/explicit-function-return-type": "warn",
-      "react/react-in-jsx-scope": "off",
-      "@typescript-eslint/consistent-type-imports": "off",
-      "react/display-name": "off"
+      "@typescript-eslint/explicit-function-return-type": "warn"
     }
   }
 }
