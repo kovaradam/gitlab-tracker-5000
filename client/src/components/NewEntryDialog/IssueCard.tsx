@@ -59,6 +59,7 @@ export const IssueCard: React.FC<React.PropsWithChildren<Props>> = ({
     wrapperRef.current?.focus();
     wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, []);
+  
   return (
     <S.Wrapper data-id={card.cardId} tabIndex={0} ref={wrapperRef}>
       <S.Overlay onClick={(): void => updateCard({ ...card, isError: false })}>

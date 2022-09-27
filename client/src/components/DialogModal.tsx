@@ -7,7 +7,11 @@ const modalRoot = document.getElementById('modal-root');
 
 type Props = { className?: string; hide?: () => void };
 
-export const DialogModal: React.FC<React.PropsWithChildren<Props>> = ({ children, className, hide }) => {
+export const DialogModal: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  className,
+  hide,
+}) => {
   const handleOverlayClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
     if (event.currentTarget !== event.target) {
       return;
@@ -15,13 +19,22 @@ export const DialogModal: React.FC<React.PropsWithChildren<Props>> = ({ children
     hide?.();
   };
 
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  React.useLayoutEffect(() => {
+    wrapperRef.current?.focus();
+    wrapperRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, []);
+
   if (!modalRoot) {
     return null;
   }
 
   return ReactDOM.createPortal(
     <S.Overlay onMouseDown={handleOverlayClick}>
-      <S.Wrapper className={className}>{children}</S.Wrapper>;
+      <S.Wrapper className={className} ref={wrapperRef} tabIndex={0}>
+        {children}
+      </S.Wrapper>
+      ;
     </S.Overlay>,
     modalRoot,
   );
